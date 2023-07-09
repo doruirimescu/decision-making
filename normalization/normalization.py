@@ -6,21 +6,34 @@ import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
 
 
-class NormalizerType(str, Enum):
-    IDENTITY = "identity"
-    RELATIVE_ASCENDING = "relative_ascending"
-    RELATIVE_DESCENDING = "relative_descending"
-    LINEAR_POSITIVE = "linear_positive"
+class NormalizerType(int, Enum):
+    IDENTITY = 1
+    RELATIVE_ASCENDING = 2
+    RELATIVE_DESCENDING = 3
+    LINEAR_POSITIVE = 4
+    BOOLEAN = 5
+
+    @property
+    def description(self) -> str:
+        if self.name == "IDENTITY":
+            return "Identity function. Returns the value without any changes."
+        elif self.name == "RELATIVE_ASCENDING":
+            return "Relative ascending function. Returns the value relative to the minimum and maximum values. 0-100"
+        elif self.name == "RELATIVE_DESCENDING":
+            return "Relative descending function. Returns the value relative to the minimum and maximum values. 100-0"
+        elif self.name == "LINEAR_POSITIVE":
+            return "Linear positive function. "
+
+    @staticmethod
+    def enum_name() -> str:
+        return "normalizer type"
+
 
 class Normalizer(ABC):
     """
     A class that represents a normalizer. A normalizer is a function that takes a value and returns a normalized value,
     i.e. a value between 0 and 100.
     """
-
-    def __init__(self, description: str):
-        self.description = description
-
     @abstractmethod
     def __call__(self, *args, **kwargs) -> float:
         pass
@@ -29,12 +42,13 @@ class Normalizer(ABC):
         pass
 
 
-
 def get_normalizer(normalizer_type: NormalizerType) -> Normalizer:
     if normalizer_type == NormalizerType.IDENTITY:
         return Identity()
     elif normalizer_type == NormalizerType.RELATIVE_ASCENDING:
         return RelativeAscending()
+    elif normalizer_type == NormalizerType.BOOLEAN:
+        return Boolean()
     # elif normalizer_type == NormalizerType.RELATIVE_DESCENDING:
     #     return RelativeDescending()
     # elif normalizer_type == NormalizerType.LINEAR_POSITIVE:
@@ -42,12 +56,8 @@ def get_normalizer(normalizer_type: NormalizerType) -> Normalizer:
     else:
         raise ValueError(f"Unknown normalizer type: {normalizer_type}")
 
-class Identity(Normalizer):
-    def __init__(self):
-        super().__init__(
-            description="Identity function. Returns the value without any changes.",
-        )
 
+class Identity(Normalizer):
     def __call__(self, x: float) -> float:
         return x
 
@@ -64,11 +74,6 @@ class Identity(Normalizer):
 
 
 class RelativeAscending(Normalizer):
-    def __init__(self):
-        super().__init__(
-            description="Relative ascending",
-        )
-
     def __call__(self, x: int, values: List[int]) -> float:
         sorted_values = sorted(values)
         try:
@@ -76,6 +81,11 @@ class RelativeAscending(Normalizer):
             return (index_of_x) / (len(values)-1) * 100
         except Exception as e:
             return 0
+
+
+class Boolean(Normalizer):
+    def __call__(self, x: int) -> float:
+        return 100 if x else 0
 
 
 def linear_positive(x: int, range: Tuple[int, int]) -> float:
@@ -134,11 +144,3 @@ def plot_step_linear_positive():
     plt.ylabel("Normalized x")
     plt.grid()
     plt.show()
-
-
-# plot_step_linear_positive()
-
-
-def change_normalizer_type() -> NormalizerType:
-    # Walk the user through creating a normalizer
-    print("First, choose a normalizer type. The options are:")

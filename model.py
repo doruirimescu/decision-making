@@ -1,6 +1,7 @@
 from parameter import create_parameter, Parameter
 from dataclasses import dataclass
 from typing import List, Optional
+import user_interaction
 
 
 @dataclass
@@ -14,7 +15,7 @@ class Model:
 
 
 def create_model() -> Model:
-    name = str(input("First, input the model name: "))
+    name = user_interaction.get_name("model")
     print("Next, input the model parameters. When you are done, enter 'done'.")
     print("")
     r = None

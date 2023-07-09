@@ -1,7 +1,8 @@
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Optional, Tuple, List
 import normalization.normalization as normalization
+import user_interaction
 
 
 class ParameterType(int, Enum):
@@ -21,87 +22,69 @@ class ParameterType(int, Enum):
 
     @property
     def description(self) -> str:
-        if self.value == 1:
+        if self.name == "NUMERICAL":
             return (
-                "This type represents parameters that have numeric values. "
+                f"{self.name} represents parameters that have numeric values. \n"
                 "Examples could be values related to costs, quantities, ratings, or scores."
             )
-        elif self.value == 2:
+        elif self.name == "BOOLEAN":
             return (
-                "This type represents parameters that have binary values, typically true or false. "
+                f"{self.name} represents parameters that have binary values, typically true or false. \n"
                 "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
             )
-        elif self.value == 3:
+        elif self.name == "ENUM":
             return (
-                "This type represents parameters that have a set of predefined labels or categories. "
-                "Users can choose from a list of options to assign a value to the parameter. "
+                f"{self.name} represents parameters that have a set of predefined labels or categories. \n"
+                "Users can choose from a list of options to assign a value to the parameter. \n"
                 "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
             )
-        elif self.value == 4:
+        elif self.name == "TEXT":
             return (
-                "This type represents parameters that accept free-form text input. "
+                f"{self.name} represents parameters that accept free-form text input. \n"
                 "Text parameters can capture qualitative information, user comments, or subjective evaluations."
             )
-        elif self.value == 5:
+        elif self.name == "DATE_TIME":
             return (
-                "This type represents parameters that store dates or timestamps. "
-                "Date/time parameters can be used to capture time-sensitive factors, "
+                f"{self.name} represents parameters that store dates or timestamps. \n"
+                "Date/time parameters can be used to capture time-sensitive factors, \n"
                 "deadlines, or temporal aspects of decision-making."
             )
-        elif self.value == 6:
+        elif self.name == "RANGE":
             return (
-                "This type represents parameters that define a range of values, "
-                " such as a minimum and maximum value. Range parameters can be used "
+                f"{self.name} represents parameters that define a range of values, \n"
+                " such as a minimum and maximum value. Range parameters can be used \n"
                 " to model variables with bounds, such as acceptable values or performance thresholds."
             )
-        elif self.value == 7:
+        elif self.name == "PERCENTAGE":
             return (
-                "This type represents parameters that represent values as a percentage of a whole. "
+                f"{self.name} represents parameters that represent values as a percentage of a whole. \n"
                 " Percentage parameters are useful for modeling proportions, allocations, or relative weights."
             )
-        elif self.value == 8:
+        elif self.name == "RATIO":
             return (
-                "This type represents parameters that express a relationship between two quantities. "
+                f"{self.name} represents parameters that express a relationship between two quantities. \n"
                 "Ratios can be used to model comparative measures, efficiency ratios, or trade-offs between factors."
             )
-        elif self.value == 9:
+        elif self.name == "ARRAY":
             return (
-                "This type represents parameters that store a list of values. "
-                "Array parameters can be used to model multi-select lists, "
+                f"{self.name} represents parameters that store a list of values. \n"
+                "Array parameters can be used to model multi-select lists, \n"
                 "or to capture multiple values for a single parameter."
             )
         else:
             return "Invalid parameter type."
 
-
-def create_parameter_type() -> ParameterType:
-    print()
-    print("Choose a parameter type. The options are:")
-    for e in ParameterType:
-        print(f"{e.value}: {e.name}")
-
-    n = ["", ""]
-    while len(n) > 1:
-        n = input(
-            "\nPlease enter the desired parameter type number. \n"
-            "If a description is needed, follow it by a zero:"
-            ).split(" ")
-        if len(n) > 1:
-            print(ParameterType(int(n[0])).description)
-
-    parameter_type_ = ParameterType(int(n[0]))
-    print("You have chosen:", parameter_type_.name)
-    print()
-    return parameter_type_
-
+    @staticmethod
+    def enum_name() -> str:
+        return "parameter type"
 
 @dataclass
 class Parameter:
     name: str
     type_: ParameterType
+    normalizer_type: normalization.NormalizerType
     reward: float = 0.0
     value: Any = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "reward":
@@ -109,9 +92,6 @@ class Parameter:
                 raise ValueError("Reward cannot be below 0.")
             elif __value > 100:
                 raise ValueError("Reward cannot be over 100.")
-
-        if __name == "value":
-            print(f"Called Parameter __setattr__ with {__name} and {__value}")
         super().__setattr__(__name, __value)
 
     def __getattribute__(self, __name: str) -> Any:
@@ -127,6 +107,7 @@ class Parameter:
 class NumericalParameter(Parameter):
     value: Optional[float] = None
     value_range: Optional[Tuple[float, float]] = None
+    normalizer_type: normalization.NormalizerType = field(default=normalization.NormalizerType.IDENTITY)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -136,7 +117,6 @@ class NumericalParameter(Parameter):
                 )
 
         if __name == "value":
-            print(f"Called NumericalParameter __setattr__ with {__name} and {__value}")
             if self.value_range is not None:
                 if __value < self.value_range[0]:
                     raise ValueError(
@@ -149,34 +129,37 @@ class NumericalParameter(Parameter):
                         f"the maximum value of the range."
                     )
         super().__setattr__(__name, __value)
-    # TODO: add normalization function
 
-
+@dataclass
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
+    normalizer_type: normalization.NormalizerType = field(default=normalization.NormalizerType.BOOLEAN)
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        super().__setattr__(__name, __value)
 
 
 def create_parameter() -> Parameter:
-    name_ = str(input("Please, input the parameter name:"))
-    type_ = create_parameter_type()
+    name_ = user_interaction.get_name("parameter")
+    type_ = user_interaction.create_type(ParameterType)
 
     if type_ == ParameterType.NUMERICAL:
-        r = input(
-            "Please, input the parameter range (min, max), "
-            "or leave blank if there is no range: "
-        ).split(",")
-        range_ = (float(r[0]), float(r[1])) if len(r) > 1 else None
-
+        range_ = user_interaction.get_range("parameter")
         parameter = NumericalParameter(name=name_, type_=type_, value_range=range_)
-        n = input(
-            f"The default normalizer is {parameter.normalizer_type}. \n"
-            "Would you like to change it ? (y/n)"
-        )
-        if n == "y":
-            parameter.normalizer_type = normalization.change_normalizer_type()
+        should_change_default = user_interaction.should_change_default(
+            "normalizer", parameter.normalizer_type.value
+            )
+        if should_change_default:
+            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
         return NumericalParameter(name=name_, type_=type_, value_range=range_)
 
     elif type_ == ParameterType.BOOLEAN:
-        pass
+        parameter = BooleanParameter(name=name_, type_=type_)
+        should_change_default = user_interaction.should_change_default(
+            "normalizer", parameter.normalizer_type.value
+            )
+        if should_change_default:
+            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
+        return BooleanParameter(name=name_, type_=type_)
 
     return Parameter(name=name_, type_=type_)
