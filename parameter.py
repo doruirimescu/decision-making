@@ -1,7 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple, List
-import normalization
+import normalization.normalization as normalization
 
 
 class ParameterType(int, Enum):
