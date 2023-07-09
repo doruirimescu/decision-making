@@ -12,6 +12,7 @@ class NormalizerType(int, Enum):
     RELATIVE_DESCENDING = 3
     LINEAR_POSITIVE = 4
     BOOLEAN = 5
+    STEP = 6
 
     @property
     def description(self) -> str:
@@ -20,9 +21,21 @@ class NormalizerType(int, Enum):
         elif self.name == "RELATIVE_ASCENDING":
             return "Relative ascending function. Returns the value relative to the minimum and maximum values. 0-100"
         elif self.name == "RELATIVE_DESCENDING":
-            return "Relative descending function. Returns the value relative to the minimum and maximum values. 100-0"
+            return (
+                "Relative descending function. Returns the value relative to the "
+                "minimum and maximum values. 100-0"
+            )
         elif self.name == "LINEAR_POSITIVE":
-            return "Linear positive function. "
+            return (
+                "Linear positive function. Returns the value placed on a line defined by the given range. "
+                "The first value of the range is mapped to 0, the second value of the range is mapped to 100."
+                "Values of x are mapped on this line."
+            )
+        elif self.name == "BOOLEAN":
+            return "Boolean function. Returns 0 if the value is False and 100 if the value is True."
+        elif self.name == "STEP":
+            return "Step function. Returns 0 if the value is below threshold, 100 if the value is above threshold."
+
 
     @staticmethod
     def enum_name() -> str:
@@ -49,8 +62,8 @@ def get_normalizer(normalizer_type: NormalizerType) -> Normalizer:
         return RelativeAscending()
     elif normalizer_type == NormalizerType.BOOLEAN:
         return Boolean()
-    # elif normalizer_type == NormalizerType.RELATIVE_DESCENDING:
-    #     return RelativeDescending()
+    elif normalizer_type == NormalizerType.STEP:
+        return Step()
     # elif normalizer_type == NormalizerType.LINEAR_POSITIVE:
     #     return LinearPositive()
     else:
@@ -65,7 +78,6 @@ class Identity(Normalizer):
         x = [random.randint(0, 100) for _ in range(15)]
         y = [self.__call__(i) for i in x]
         plt.scatter(x, y)
-        # plt.plot(x, y)
         plt.title("Identity normalizer function example")
         plt.xlabel("x")
         plt.ylabel("Normalized x")
@@ -95,24 +107,64 @@ class Boolean(Normalizer):
         x = [0, 1]
         y = [self.__call__(i) for i in x]
         plt.scatter(x, y)
-        # plt.plot(x, y)
         plt.title("Boolean normalizer function example")
         plt.xlabel("x")
         plt.ylabel("Normalized x")
         plt.grid()
         plt.show()
 
-def linear_positive(x: int, range: Tuple[int, int]) -> float:
-    """_summary_
 
-    Args:
-        x (int): _description_
-        range (Tuple[int, int]): _description_
+class Step(Normalizer):
+    def __call__(self, x: int, threshold: int) -> float:
+        if x < threshold:
+            return 0
+        else:
+            return 100
 
-    Returns:
-        float: normalized value between 0 and 100
-    """
-    return 100 * (x - range[0]) / (range[1] - range[0])
+    def plot_example(self):
+        x = [random.randint(0, 100) for _ in range(15)]
+        y = [self.__call__(i, 35) for i in x]
+        plt.scatter(x, y)
+        plt.title("Step normalizer function example with threshold 35")
+        plt.xlabel("x")
+        plt.ylabel("Normalized x")
+        plt.grid()
+        plt.show()
+
+
+class LinearPositive(Normalizer):
+    def __call__(self, x: int, range: Tuple[int, int]) -> float:
+        return 100 * (x - range[0]) / (range[1] - range[0])
+
+    def plot_example(self):
+        x = np.arange(1930, 2023)
+        y = [self.__call__(i, (1950, 2000)) for i in x]
+        plt.plot(x, y)
+        plt.title("Linear positive normalization function with range (1950, 2000)")
+        plt.xlabel("Year")
+        plt.ylabel("Normalized Year")
+        plt.grid()
+        plt.show()
+
+
+class StepLinearPositive(Normalizer):
+    def __call__(self, x: int, range: Tuple[int, int]) -> float:
+        if x < range[0]:
+            return 0
+        elif x < range[1]:
+            return LinearPositive()(x, range)
+        else:
+            return 100
+
+    def plot_example(self):
+        x = np.arange(1930, 2023)
+        y = [self.__call__(i, (1950, 2000)) for i in x]
+        plt.plot(x, y)
+        plt.title("Step linear positive normalization function with range (1950, 2000)")
+        plt.xlabel("Year")
+        plt.ylabel("Normalized Year")
+        plt.grid()
+        plt.show()
 
 
 def linear_negative(x: int, range: Tuple[int, int]) -> float:
@@ -122,39 +174,19 @@ def linear_negative(x: int, range: Tuple[int, int]) -> float:
     return 100 - linear_positive(x, range)
 
 
-def step(x: int, threshold: int) -> float:
-    """
-    Normalizes x in a range to a value between 0 and 1.
-    """
-    if x < threshold:
-        return 0
-    else:
-        return 100
-
-
-def step_linear_positive(x: int, range: Tuple[int, int]) -> float:
-    """
-    Normalizes x in a range to a value between 0 and 1.
-    """
-    if x < range[0]:
-        return 0
-    elif x < range[1]:
-        return linear_positive(x, range)
-    else:
-        return 100
-
-
 # TODO: make normalizer class
 def plot_step_linear_positive():
     """
     Plots a graph of the normalization function.
     """
 
-    x = np.arange(0, 100)
-    y = [step_linear_positive(i, (30, 70)) for i in x]
+    x = np.arange(1930, 2023)
+    y = [step_linear_positive(i, (1950, 2000)) for i in x]
     plt.plot(x, y)
-    plt.title("Linear positive normalization function")
-    plt.xlabel("x")
-    plt.ylabel("Normalized x")
+    plt.title("Linear positive normalization function with range (1950, 2000)")
+    plt.xlabel("Year")
+    plt.ylabel("Normalized Year")
     plt.grid()
     plt.show()
+
+plot_step_linear_positive()

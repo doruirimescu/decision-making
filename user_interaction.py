@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from colorama import Fore, Style
 
+
 def introduction():
     print(f"{Fore.GREEN}")
     print("Welcome to the decision making tool.")
@@ -11,6 +12,7 @@ def introduction():
     print("4. Decision making stage. Here, you will make a decision based on the model.")
     print(f"{Style.RESET_ALL}")
     print("")
+
 
 def create_type(t):
     print()
