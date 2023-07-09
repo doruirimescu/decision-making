@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
 
 
+class NormalizerType(str, Enum):
+    IDENTITY = "identity"
+    RELATIVE_ASCENDING = "relative_ascending"
+    RELATIVE_DESCENDING = "relative_descending"
+    LINEAR_POSITIVE = "linear_positive"
+
 class Normalizer(ABC):
     """
     A class that represents a normalizer. A normalizer is a function that takes a value and returns a normalized value,
@@ -22,6 +28,19 @@ class Normalizer(ABC):
     def plot_example(self):
         pass
 
+
+
+def get_normalizer(normalizer_type: NormalizerType) -> Normalizer:
+    if normalizer_type == NormalizerType.IDENTITY:
+        return Identity()
+    elif normalizer_type == NormalizerType.RELATIVE_ASCENDING:
+        return RelativeAscending()
+    # elif normalizer_type == NormalizerType.RELATIVE_DESCENDING:
+    #     return RelativeDescending()
+    # elif normalizer_type == NormalizerType.LINEAR_POSITIVE:
+    #     return LinearPositive()
+    else:
+        raise ValueError(f"Unknown normalizer type: {normalizer_type}")
 
 class Identity(Normalizer):
     def __init__(self):
@@ -106,8 +125,6 @@ def plot_step_linear_positive():
     """
     Plots a graph of the normalization function.
     """
-    import matplotlib.pyplot as plt
-    import numpy as np
 
     x = np.arange(0, 100)
     y = [step_linear_positive(i, (30, 70)) for i in x]
@@ -122,6 +139,6 @@ def plot_step_linear_positive():
 # plot_step_linear_positive()
 
 
-def create_normalizer() -> Normalizer:
+def change_normalizer_type() -> NormalizerType:
     # Walk the user through creating a normalizer
     print("First, choose a normalizer type. The options are:")

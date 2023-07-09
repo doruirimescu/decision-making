@@ -101,7 +101,7 @@ class Parameter:
     type_: ParameterType
     reward: float = 0.0
     value: Any = None
-    normalizer: normalization.Normalizer = normalization.Identity()
+    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "reward":
@@ -116,7 +116,7 @@ class Parameter:
 
     def __getattribute__(self, __name: str) -> Any:
         if __name == "reward":
-            return self.normalizer(self.value)
+            return normalization.get_normalizer(self.normalizer_type)(self.value)
         return super().__getattribute__(__name)
 
     def __repr__(self) -> str:
@@ -169,11 +169,11 @@ def create_parameter() -> Parameter:
 
         parameter = NumericalParameter(name=name_, type_=type_, value_range=range_)
         n = input(
-            f"The default normalizer is {parameter.normalizer.description}. \n"
+            f"The default normalizer is {parameter.normalizer_type}. \n"
             "Would you like to change it ? (y/n)"
         )
         if n == "y":
-            parameter.normalizer = normalization.create_normalizer()
+            parameter.normalizer_type = normalization.change_normalizer_type()
         return NumericalParameter(name=name_, type_=type_, value_range=range_)
 
     elif type_ == ParameterType.BOOLEAN:

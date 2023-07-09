@@ -7,6 +7,10 @@ from typing import List, Optional
 class Model:
     name: str
     parameters: List[Parameter]
+    storage_folder: Optional[str] = "data/model/"
+
+    def get_storage_file_path(self) -> str:
+        return self.storage_folder + self.name + ".json"
 
 
 def create_model() -> Model:
