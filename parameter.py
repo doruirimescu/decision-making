@@ -100,6 +100,9 @@ class Parameter:
             return normalization.get_normalizer(self.normalizer_type)(self.value)
         return super().__getattribute__(__name)
 
+    def evaluate_score(self) -> None:
+        self.score = normalization.get_normalizer(self.normalizer_type)(self.value)
+
     def __repr__(self) -> str:
         return f"Parameter: {self.name}, {self.type_}"
 
@@ -139,6 +142,15 @@ class BooleanParameter(Parameter):
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
 
+@dataclass
+class EnumParameter(Parameter):
+    # We need to add a dict that maps the enum names to their values
+    value: Optional[str] = None
+    normalizer_type: normalization.NormalizerType = field(default=normalization.NormalizerType.IDENTITY)
+    labels: dict = field(default_factory=dict)
+
+    def add_new(self, label: str, value: int) -> None:
+        self.labels[label] = value
 
 def create_parameter() -> Parameter:
     name_ = user_interaction.get_name("parameter")
@@ -162,5 +174,24 @@ def create_parameter() -> Parameter:
         if should_change_default:
             parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
         return BooleanParameter(name=name_, type_=type_)
+
+    elif type_ == ParameterType.ENUM:
+        parameter = EnumParameter(name=name_, type_=type_)
+        should_change_default = user_interaction.should_change_default(
+            "normalizer", parameter.normalizer_type.value
+            )
+        if should_change_default:
+            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
+
+        print("Please enter the enum values. Enter 'q' to stop.")
+        while True:
+            label = input("Enter the label: ")
+            if label == "q":
+                break
+            value = input("Enter the value: ")
+            parameter.add_new(label, value)
+
+        return parameter
+
 
     return Parameter(name=name_, type_=type_)

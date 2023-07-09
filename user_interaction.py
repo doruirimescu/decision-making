@@ -1,5 +1,16 @@
 from typing import List, Tuple
-import parameter
+from colorama import Fore, Style
+
+def introduction():
+    print(f"{Fore.GREEN}")
+    print("Welcome to the decision making tool.")
+    print("The decision making model consists of a few stages:")
+    print("1. Model building stage. Here, you will define the model and its parameters.")
+    print("2. Data collection stage. Here, you will collect data for the model.")
+    print("3. Model evaluation stage. Here, you will evaluate the model.")
+    print("4. Decision making stage. Here, you will make a decision based on the model.")
+    print(f"{Style.RESET_ALL}")
+    print("")
 
 def create_type(t):
     print()
@@ -26,13 +37,15 @@ def create_type(t):
 def get_name(what: str):
     """Get the name of the model or parameter.
     """
-    return input(f"Please, input the {what} name: ")
+    return input(
+        f"Please, input the {what} name: "
+        )
 
 
 def should_change_default(what: str, default_value) -> bool:
     answer = input(
-            f"The default {what} is {default_value}. \n"
-            "Would you like to change it ? (y/n)"
+        f"The default {what} is {default_value}. \n"
+        "Would you like to change it ? (y/n)"
         )
     return answer == "y"
 
@@ -71,17 +84,17 @@ def get_parameter_weights(parameters: List):
 
     for i, p in enumerate(parameters):
         print(f"{i}: parameter: {p.name} weight: {p.weight}")
-    print(
-        "If you want to change the weight of a parameter, enter its index.\n"
-        "If you are done, enter 'done'."
-    )
-    answer = input("Enter the index of the parameter you want to change: ")
+
+    def get_answer():
+        return input("Enter the index of the parameter you want to change, or enter 'done': ")
+    answer = get_answer()
     while answer != "done":
+        answer = get_answer()
         i = int(answer)
         w = input("Enter the new weight: ")
         parameters[i].weight = float(w)
         print(f"Parameter {i} has weight {w}.")
-        answer = input("Enter the index of the parameter you want to change, or enter 'done': ")
+
 
     print("The new parameters are:")
 

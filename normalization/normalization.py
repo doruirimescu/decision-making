@@ -91,6 +91,16 @@ class Boolean(Normalizer):
     def __call__(self, x: int) -> float:
         return 100 if x else 0
 
+    def plot_example(self):
+        x = [0, 1]
+        y = [self.__call__(i) for i in x]
+        plt.scatter(x, y)
+        # plt.plot(x, y)
+        plt.title("Boolean normalizer function example")
+        plt.xlabel("x")
+        plt.ylabel("Normalized x")
+        plt.grid()
+        plt.show()
 
 def linear_positive(x: int, range: Tuple[int, int]) -> float:
     """_summary_
