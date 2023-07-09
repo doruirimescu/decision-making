@@ -180,7 +180,3 @@ def create_parameter() -> Parameter:
         pass
 
     return Parameter(name=name_, type_=type_)
-
-p = create_parameter()
-p.value = 10
-print(p.reward)
