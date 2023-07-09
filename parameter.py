@@ -83,19 +83,20 @@ class Parameter:
     name: str
     type_: ParameterType
     normalizer_type: normalization.NormalizerType
-    reward: float = 0.0
+    score: float = 0.0
     value: Any = None
+    weight: float = 1.0
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name == "reward":
+        if __name == "score":
             if __value < 0:
-                raise ValueError("Reward cannot be below 0.")
+                raise ValueError("Score cannot be below 0.")
             elif __value > 100:
-                raise ValueError("Reward cannot be over 100.")
+                raise ValueError("Score cannot be over 100.")
         super().__setattr__(__name, __value)
 
     def __getattribute__(self, __name: str) -> Any:
-        if __name == "reward":
+        if __name == "score":
             return normalization.get_normalizer(self.normalizer_type)(self.value)
         return super().__getattribute__(__name)
 

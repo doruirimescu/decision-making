@@ -13,16 +13,19 @@ class Model:
     def get_storage_file_path(self) -> str:
         return self.storage_folder + self.name + ".json"
 
+    def reorder_parameters(self, new_order: List[int]) -> None:
+        self.parameters = [self.parameters[i] for i in new_order]
+
 
 def create_model() -> Model:
     name = user_interaction.get_name("model")
-    print("Next, input the model parameters. When you are done, enter 'done'.")
-    print("")
-    r = None
+    user_interaction.input_model_parameters()
+    should_continue = True
     parameters = []
-    while r != 'done':
+    while should_continue:
         parameters.append(create_parameter())
-        r = input("Enter 'done' if you are done, or press enter to continue: ")
+        should_continue = not user_interaction.is_done()
+    user_interaction.get_parameter_weights(parameters)
     m = Model(name=name, parameters=parameters)
-    print("You have created the following model:", m)
+    user_interaction.model_created(m)
     return m

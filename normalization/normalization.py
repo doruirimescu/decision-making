@@ -78,6 +78,10 @@ class RelativeAscending(Normalizer):
         sorted_values = sorted(values)
         try:
             index_of_x = sorted_values.index(x)
+            if len(values) == 1:
+                return 100
+            elif len(values) == 0:
+                return 0
             return (index_of_x) / (len(values)-1) * 100
         except Exception as e:
             return 0
