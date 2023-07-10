@@ -82,12 +82,11 @@ class ParameterType(int, Enum):
 class Parameter(BaseModel):
     name: str
     type_: ParameterType
-    normalizer_type: normalization.NormalizerType
     score: float = 0.0
     value: Any = None
     weight: float = 1.0
     # How to use object instead of storing type and class separately
-    normalizer: Union[normalization.Normalizer.get_subclasses()]
+    normalizer: Union[normalization.Normalizer.get_subclasses()] = normalization.Identity()
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "score":
@@ -99,11 +98,11 @@ class Parameter(BaseModel):
 
     def __getattribute__(self, __name: str) -> Any:
         if __name == "score":
-            return normalization.get_normalizer(self.normalizer_type)(self.value)
+            return self.normalizer(self.value)
         return super().__getattribute__(__name)
 
     def evaluate_score(self) -> None:
-        self.score = normalization.get_normalizer(self.normalizer_type)(self.value)
+        self.score = self.normalizer(self.value)
 
     def __repr__(self) -> str:
         return f"Parameter: {self.name}, {self.type_}"
@@ -112,7 +111,7 @@ class Parameter(BaseModel):
 class NumericalParameter(Parameter):
     value: Optional[float] = None
     value_range: Optional[Tuple[float, float]] = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
+    type_: ParameterType = ParameterType.NUMERICAL
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -135,9 +134,10 @@ class NumericalParameter(Parameter):
                     )
         super().__setattr__(__name, __value)
 
+
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.BOOLEAN
+    type_: ParameterType = ParameterType.BOOLEAN
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
@@ -146,11 +146,12 @@ class BooleanParameter(Parameter):
 class EnumParameter(Parameter):
     # We need to add a dict that maps the enum names to their values
     value: Optional[str] = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
+    type_: ParameterType = ParameterType.ENUM
     labels: dict
 
     def add_new(self, label: str, value: int) -> None:
         self.labels[label] = value
+
 
 def create_parameter() -> Parameter:
     name_ = user_interaction.get_name("parameter")
@@ -158,30 +159,30 @@ def create_parameter() -> Parameter:
 
     if type_ == ParameterType.NUMERICAL:
         range_ = user_interaction.get_range("parameter")
-        parameter = NumericalParameter(name=name_, type_=type_, value_range=range_)
+        parameter = NumericalParameter(name=name_, value_range=range_)
         should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer_type.value
+            "normalizer", parameter.normalizer.get_type()
             )
         if should_change_default:
-            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
-        return NumericalParameter(name=name_, type_=type_, value_range=range_)
+            parameter.normalizer = user_interaction.create_normalizer()
+        return parameter
 
     elif type_ == ParameterType.BOOLEAN:
-        parameter = BooleanParameter(name=name_, type_=type_)
+        parameter = BooleanParameter(name=name_)
         should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer_type.value
+            "normalizer", parameter.normalizer.get_type()
             )
         if should_change_default:
-            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
-        return BooleanParameter(name=name_, type_=type_)
+            parameter.normalizer = user_interaction.create_normalizer()
+        return parameter
 
     elif type_ == ParameterType.ENUM:
-        parameter = EnumParameter(name=name_, type_=type_)
+        parameter = EnumParameter(name=name_)
         should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer_type.value
+            "normalizer", parameter.normalizer.get_type()
             )
         if should_change_default:
-            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
+            parameter.normalizer = user_interaction.create_normalizer()
 
         print("Please enter the enum values. Enter 'q' to stop.")
         while True:

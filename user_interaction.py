@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from colorama import Fore, Style
+import normalization.normalization as normalization
 
 
 def introduction():
@@ -34,6 +35,44 @@ def create_type(t):
     print("You chose:", created_type.name)
     print()
     return created_type
+
+
+def create_normalizer():
+    print()
+    print("Choose a normalizer. The options are:")
+    for i, n in enumerate(normalization.Normalizer.get_subclasses_as_list()):
+        print(f"{i}: {n}")
+    n = ["", ""]
+    while len(n) > 1:
+        n = input(
+            f"\nPlease enter the desired normalizer number. \n"
+            "If a description is needed, follow it by a zero:"
+            ).split(" ")
+        if len(n) > 1:
+            print()
+            selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
+            description = eval(f"normalization.{selected_normalizer_name}.get_description()")
+            print(description)
+            print()
+
+    selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
+
+    additional_parameters = eval(f"normalization.{selected_normalizer_name}.get_parameters_and_their_description()")
+    if additional_parameters is not None:
+        print("This normalizer has additional parameters:")
+        for k, v in additional_parameters.items():
+            print(f"{k}: {v}")
+        print()
+
+    selected_parameter_values = {}
+    if additional_parameters is not None:
+        for k in additional_parameters.keys():
+            selected_parameter_values[k] = input(f"Please enter the value for {k}: ")
+
+    normalizer = eval(f"normalization.{selected_normalizer_name}(**{selected_parameter_values})")
+    print(f"You created: {selected_normalizer_name}({selected_parameter_values})")
+    print()
+    return normalizer
 
 
 def get_name(what: str):
