@@ -86,7 +86,7 @@ class Parameter(BaseModel):
     value: Any = None
     weight: float = 1.0
     # How to use object instead of storing type and class separately
-    normalizer: Union[normalization.Normalizer.get_subclasses()] = normalization.Identity()
+    normalizer: normalization.Normalizer = normalization.Identity()
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "score":
@@ -138,6 +138,7 @@ class NumericalParameter(Parameter):
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
     type_: ParameterType = ParameterType.BOOLEAN
+    normalizer: normalization.Normalizer = normalization.Boolean()
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)

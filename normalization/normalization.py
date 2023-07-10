@@ -7,21 +7,6 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 
-class NormalizerType(int, Enum):
-    IDENTITY = 1
-    RELATIVE_ASCENDING = 2
-    RELATIVE_DESCENDING = 3
-    LINEAR_POSITIVE = 4
-    LINEAR_NEGATIVE = 5
-    BOOLEAN = 6
-    STEP = 7
-    UNIFORM = 8
-
-    @staticmethod
-    def enum_name() -> str:
-        return "normalizer type"
-
-
 class Normalizer(ABC, BaseModel):
     """
     A class that represents a normalizer. A normalizer is a function that takes a value and returns a normalized value,
@@ -96,21 +81,6 @@ class RelativeAscending(Normalizer):
         )
 
 
-class Boolean(Normalizer):
-    def __call__(self, x: int) -> float:
-        return 100 if x else 0
-
-    def plot_example(self):
-        x = [0, 1]
-        y = [self.__call__(i) for i in x]
-        plt.scatter(x, y)
-        plt.title("Boolean normalizer function example")
-        plt.xlabel("x")
-        plt.ylabel("Normalized x")
-        plt.grid()
-        plt.show()
-
-
 class Step(Normalizer):
     threshold: int
 
@@ -135,6 +105,35 @@ class Step(Normalizer):
         return (
             "Step function. Returns 0 if the value is below threshold, 100 if the value is above threshold."
         )
+
+    @classmethod
+    def get_parameters_and_their_description(cls) -> Optional[Dict[str, str]]:
+        return {"threshold": (
+            "Threshold below which all values are zero. \n"
+            "Above or equal which all values are 100"
+            )}
+
+
+class Boolean(Normalizer):
+    def __call__(self, x: int) -> float:
+        if x == 0:
+            return 0
+        else:
+            return 100
+
+    def plot_example(self):
+        x = [0, 1]
+        y = [self.__call__(i) for i in x]
+        plt.scatter(x, y)
+        plt.title("Boolean normalizer function example")
+        plt.xlabel("x")
+        plt.ylabel("Normalized x")
+        plt.grid()
+        plt.show()
+
+    @classmethod
+    def get_parameters_and_their_description(cls) -> Optional[Dict[str, str]]:
+        return None
 
 
 class LinearPositive(Normalizer):
