@@ -3,64 +3,26 @@ from typing import Any, Optional, Tuple, List, Union, Dict
 from pydantic import BaseModel
 import normalization.normalization as normalization
 
+f"TEXT represents parameters that accept free-form text input. \n"
+"Text parameters can capture qualitative information, user comments, or subjective evaluations."
 
-class ParameterType(int, Enum):
-    # Parameter type enum
-    NUMERICAL = 1
-    BOOLEAN = 2
-    ENUM = 3
-    TEXT = 4
-    DATE_TIME = 5
-    RANGE = 6
-    PERCENTAGE = 7
-    RATIO = 8
-    ARRAY = 9
+f"DATE_TIME represents parameters that store dates or timestamps. \n"
+"Date/time parameters can be used to capture time-sensitive factors, \n"
+"deadlines, or temporal aspects of decision-making."
 
-    def __repr__(self) -> str:
-        return f"{self.name}"
+f"RANGE represents parameters that define a range of values, \n"
+" such as a minimum and maximum value. Range parameters can be used \n"
+" to model variables with bounds, such as acceptable values or performance thresholds."
 
-    @property
-    def description(self) -> str:
-        if self.name == "TEXT":
-            return (
-                f"{self.name} represents parameters that accept free-form text input. \n"
-                "Text parameters can capture qualitative information, user comments, or subjective evaluations."
-            )
-        elif self.name == "DATE_TIME":
-            return (
-                f"{self.name} represents parameters that store dates or timestamps. \n"
-                "Date/time parameters can be used to capture time-sensitive factors, \n"
-                "deadlines, or temporal aspects of decision-making."
-            )
-        elif self.name == "RANGE":
-            return (
-                f"{self.name} represents parameters that define a range of values, \n"
-                " such as a minimum and maximum value. Range parameters can be used \n"
-                " to model variables with bounds, such as acceptable values or performance thresholds."
-            )
-        elif self.name == "PERCENTAGE":
-            return (
-                f"{self.name} represents parameters that represent values as a percentage of a whole. \n"
-                " Percentage parameters are useful for modeling proportions, allocations, or relative weights."
-            )
-        elif self.name == "RATIO":
-            return (
-                f"{self.name} represents parameters that express a relationship between two quantities. \n"
-                "Ratios can be used to model comparative measures, efficiency ratios, or trade-offs between factors."
-            )
-        elif self.name == "ARRAY":
-            return (
-                f"{self.name} represents parameters that store a list of values. \n"
-                "Array parameters can be used to model multi-select lists, \n"
-                "or to capture multiple values for a single parameter."
-            )
-        else:
-            return "Invalid parameter type."
+f"PERCENTAGE represents parameters that represent values as a percentage of a whole. \n"
+" Percentage parameters are useful for modeling proportions, allocations, or relative weights."
 
-    @staticmethod
-    def enum_name() -> str:
-        return "parameter type"
+f"RATIO represents parameters that express a relationship between two quantities. \n"
+"Ratios can be used to model comparative measures, efficiency ratios, or trade-offs between factors."
 
+f"ARRAY represents parameters that store a list of values. \n"
+"Array parameters can be used to model multi-select lists, \n"
+"or to capture multiple values for a single parameter."
 
 class Parameter(BaseModel):
     name: str
