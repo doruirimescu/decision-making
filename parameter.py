@@ -86,6 +86,7 @@ class Parameter(BaseModel):
     score: float = 0.0
     value: Any = None
     weight: float = 1.0
+    # How to use object instead of storing type and class separately
     normalizer: Union[normalization.Normalizer.get_subclasses()]
 
     def __setattr__(self, __name: str, __value: Any) -> None:
