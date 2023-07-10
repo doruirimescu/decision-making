@@ -34,7 +34,7 @@ class Normalizer(ABC, BaseModel):
         return "Normalizer description"
 
     @classmethod
-    def get_parameters_and_their_description(cls) -> Optional[Dict[str, str]]:
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return None
 
     def get_type(self):
@@ -107,7 +107,7 @@ class Step(Normalizer):
         )
 
     @classmethod
-    def get_parameters_and_their_description(cls) -> Optional[Dict[str, str]]:
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return {"threshold": (
             "Threshold below which all values are zero. \n"
             "Above or equal which all values are 100"
@@ -132,7 +132,7 @@ class Boolean(Normalizer):
         plt.show()
 
     @classmethod
-    def get_parameters_and_their_description(cls) -> Optional[Dict[str, str]]:
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return None
 
 
@@ -198,7 +198,7 @@ class Uniform(Normalizer):
     uniform_value: float
 
     @classmethod
-    def get_parameters_and_their_description(cls) -> Optional[Dict[str, str]]:
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return {"uniform_value": "Value to which all values are normalized."}
 
     def __call__(self, x: int) -> float:

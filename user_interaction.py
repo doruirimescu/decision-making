@@ -1,7 +1,7 @@
 from typing import List, Tuple
 from colorama import Fore, Style
 import normalization.normalization as normalization
-
+import parameter
 
 def introduction():
     print(f"{Fore.GREEN}")
@@ -15,27 +15,54 @@ def introduction():
     print("")
 
 
-def create_type(t):
+def create_parameter():
     print()
-    print(f"Choose a {t.enum_name()}. The options are:")
+    print(f"Choose a parameter. The options are:")
 
-    for e in t:
-        print(f"{e.value}: {e.name}")
+    for i, n in enumerate(parameter.Parameter.get_subclasses_as_list()):
+        print(f"{i}: {n}")
     n = ["", ""]
+
     while len(n) > 1:
         n = input(
-            f"\nPlease enter the desired {t.enum_name()} number. \n"
+            f"\nPlease enter the desired parameter number. \n"
             "If a description is needed, follow it by a zero:"
             ).split(" ")
+        selected_parameter_name = parameter.Parameter.get_subclasses_as_list()[int(n[0])]
         if len(n) > 1:
             print()
-            print(t(int(n[0])).description)
+            description = eval(f"parameter.{selected_parameter_name}.get_description()")
+            print(description)
+            print()
+    additional_parameters = eval(f"parameter.{selected_parameter_name}.get_fields_and_their_description()")
+    if additional_parameters is not None:
+        print()
+        print("This parameter has the following parameters:")
+        print()
+        for k, v in additional_parameters.items():
+            print(f"{k:15}: {v}")
+        print()
 
-    created_type = t(int(n[0]))
-    print("You chose:", created_type.name)
-    print()
-    return created_type
+    selected_parameter_values = {}
+    if additional_parameters is not None:
+        for k in additional_parameters.keys():
+            from ast import literal_eval
+            answer = input(f"Please enter the value for {k}: ")
+            if answer == "":
+                answer = None
+            else:
+                answer = literal_eval(answer)
+            selected_parameter_values[k] = answer
 
+    print(selected_parameter_values)
+    p = eval(f"parameter.{selected_parameter_name}(**{selected_parameter_values})")
+
+
+    if should_change_default(
+        "normalizer", p.normalizer.get_type()
+        ):
+        p.normalizer = create_normalizer()
+    return p
 
 def create_normalizer():
     print()
@@ -48,16 +75,14 @@ def create_normalizer():
             f"\nPlease enter the desired normalizer number. \n"
             "If a description is needed, follow it by a zero:"
             ).split(" ")
+        selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
         if len(n) > 1:
             print()
-            selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
             description = eval(f"normalization.{selected_normalizer_name}.get_description()")
             print(description)
             print()
 
-    selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
-
-    additional_parameters = eval(f"normalization.{selected_normalizer_name}.get_parameters_and_their_description()")
+    additional_parameters = eval(f"normalization.{selected_normalizer_name}.get_fields_and_their_description()")
     if additional_parameters is not None:
         print("This normalizer has additional parameters:")
         for k, v in additional_parameters.items():
@@ -135,7 +160,6 @@ def get_parameter_weights(parameters: List):
         w = input("Enter the new weight: ")
         parameters[i].weight = float(w)
         print(f"Parameter {i} has weight {w}.")
-
 
     print("The new parameters are:")
 

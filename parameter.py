@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import Any, Optional, Tuple, List, Union
+from typing import Any, Optional, Tuple, List, Union, Dict
 from pydantic import BaseModel
 import normalization.normalization as normalization
-import user_interaction
 
 
 class ParameterType(int, Enum):
@@ -22,23 +21,7 @@ class ParameterType(int, Enum):
 
     @property
     def description(self) -> str:
-        if self.name == "NUMERICAL":
-            return (
-                f"{self.name} represents parameters that have numeric values. \n"
-                "Examples could be values related to costs, quantities, ratings, or scores."
-            )
-        elif self.name == "BOOLEAN":
-            return (
-                f"{self.name} represents parameters that have binary values, typically true or false. \n"
-                "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
-            )
-        elif self.name == "ENUM":
-            return (
-                f"{self.name} represents parameters that have a set of predefined labels or categories. \n"
-                "Users can choose from a list of options to assign a value to the parameter. \n"
-                "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
-            )
-        elif self.name == "TEXT":
+        if self.name == "TEXT":
             return (
                 f"{self.name} represents parameters that accept free-form text input. \n"
                 "Text parameters can capture qualitative information, user comments, or subjective evaluations."
@@ -81,7 +64,6 @@ class ParameterType(int, Enum):
 
 class Parameter(BaseModel):
     name: str
-    type_: ParameterType
     score: float = 0.0
     value: Any = None
     weight: float = 1.0
@@ -104,14 +86,28 @@ class Parameter(BaseModel):
     def evaluate_score(self) -> None:
         self.score = self.normalizer(self.value)
 
-    def __repr__(self) -> str:
-        return f"Parameter: {self.name}, {self.type_}"
+    @classmethod
+    def get_subclasses_as_list(cls):
+        return [subclass.__name__ for subclass in cls.__subclasses__()]
+
+    @classmethod
+    def get_description(cls) -> str:
+        return "Parameter description"
+
+    @classmethod
+    def get_default_fields_and_their_description(cls) -> Dict[str, str]:
+        return {
+            "name": "The name of the parameter (e.g. 'price')."
+        }
+
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        return None
 
 
 class NumericalParameter(Parameter):
     value: Optional[float] = None
     value_range: Optional[Tuple[float, float]] = None
-    type_: ParameterType = ParameterType.NUMERICAL
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -134,66 +130,59 @@ class NumericalParameter(Parameter):
                     )
         super().__setattr__(__name, __value)
 
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            f"{cls.__name__} represents parameters that have numeric values. \n"
+            "Examples could be values related to costs, quantities, ratings, or scores."
+        )
+
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        d = cls.get_default_fields_and_their_description()
+        d.update({
+            "value_range": "The range of values (min, max) that the parameter's \n\t\t "
+            "value can take. (e.g. (0, 100) for a price parameter)."
+            })
+        return d
+
 
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
-    type_: ParameterType = ParameterType.BOOLEAN
     normalizer: normalization.Normalizer = normalization.Boolean()
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
 
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            f"{cls.__name__} represents parameters that have binary values, typically true or false. \n"
+            "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
+        )
+
 
 class EnumParameter(Parameter):
     # We need to add a dict that maps the enum names to their values
     value: Optional[str] = None
-    type_: ParameterType = ParameterType.ENUM
     labels: dict
 
     def add_new(self, label: str, value: int) -> None:
         self.labels[label] = value
 
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            f"{cls.__name__} represents parameters that have a set of predefined labels or categories. \n"
+            "Users can choose from a list of options to assign a value to the parameter. \n"
+            "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
+        )
 
-def create_parameter() -> Parameter:
-    name_ = user_interaction.get_name("parameter")
-    type_ = user_interaction.create_type(ParameterType)
-
-    if type_ == ParameterType.NUMERICAL:
-        range_ = user_interaction.get_range("parameter")
-        parameter = NumericalParameter(name=name_, value_range=range_)
-        should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer.get_type()
-            )
-        if should_change_default:
-            parameter.normalizer = user_interaction.create_normalizer()
-        return parameter
-
-    elif type_ == ParameterType.BOOLEAN:
-        parameter = BooleanParameter(name=name_)
-        should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer.get_type()
-            )
-        if should_change_default:
-            parameter.normalizer = user_interaction.create_normalizer()
-        return parameter
-
-    elif type_ == ParameterType.ENUM:
-        parameter = EnumParameter(name=name_)
-        should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer.get_type()
-            )
-        if should_change_default:
-            parameter.normalizer = user_interaction.create_normalizer()
-
-        print("Please enter the enum values. Enter 'q' to stop.")
-        while True:
-            label = input("Enter the label: ")
-            if label == "q":
-                break
-            value = input("Enter the value: ")
-            parameter.add_new(label, value)
-
-        return parameter
-
-
-    return Parameter(name=name_, type_=type_)
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        d = cls.get_default_fields_and_their_description()
+        d.update({
+            "labels": "Dictionary of labels and their corresponding values. \n\t\t "
+            "value should be between 0-100 and map directly to a score."
+            })
+        return d
