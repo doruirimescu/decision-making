@@ -4,15 +4,17 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
-
+from pydantic import BaseModel
 
 class NormalizerType(int, Enum):
     IDENTITY = 1
     RELATIVE_ASCENDING = 2
     RELATIVE_DESCENDING = 3
     LINEAR_POSITIVE = 4
-    BOOLEAN = 5
-    STEP = 6
+    LINEAR_NEGATIVE = 5
+    BOOLEAN = 6
+    STEP = 7
+    UNIFORM = 8
 
     @property
     def description(self) -> str:
@@ -42,7 +44,7 @@ class NormalizerType(int, Enum):
         return "normalizer type"
 
 
-class Normalizer(ABC):
+class Normalizer(ABC, BaseModel):
     """
     A class that represents a normalizer. A normalizer is a function that takes a value and returns a normalized value,
     i.e. a value between 0 and 100.
@@ -53,6 +55,10 @@ class Normalizer(ABC):
 
     def plot_example(self):
         pass
+
+    @classmethod
+    def get_subclasses(cls):
+        return tuple(cls.__subclasses__())
 
 
 def get_normalizer(normalizer_type: NormalizerType) -> Normalizer:
@@ -147,6 +153,21 @@ class LinearPositive(Normalizer):
         plt.show()
 
 
+class LinearNegative(Normalizer):
+    def __call__(self, x: int, range: Tuple[int, int]) -> float:
+        return 100 - LinearPositive()(x, range)
+
+    def plot_example(self):
+        x = np.arange(1930, 2023)
+        y = [self.__call__(i, (1950, 2000)) for i in x]
+        plt.plot(x, y)
+        plt.title("Linear negative normalization function with range (1950, 2000)")
+        plt.xlabel("Year")
+        plt.ylabel("Normalized Year")
+        plt.grid()
+        plt.show()
+
+
 class StepLinearPositive(Normalizer):
     def __call__(self, x: int, range: Tuple[int, int]) -> float:
         if x < range[0]:
@@ -167,26 +188,16 @@ class StepLinearPositive(Normalizer):
         plt.show()
 
 
-def linear_negative(x: int, range: Tuple[int, int]) -> float:
-    """
-    Normalizes x in a range to a value between 0 and 1.
-    """
-    return 100 - linear_positive(x, range)
+class Uniform(Normalizer):
+    def __call__(self, x: int, value: float) -> float:
+        return value
 
-
-# TODO: make normalizer class
-def plot_step_linear_positive():
-    """
-    Plots a graph of the normalization function.
-    """
-
-    x = np.arange(1930, 2023)
-    y = [step_linear_positive(i, (1950, 2000)) for i in x]
-    plt.plot(x, y)
-    plt.title("Linear positive normalization function with range (1950, 2000)")
-    plt.xlabel("Year")
-    plt.ylabel("Normalized Year")
-    plt.grid()
-    plt.show()
-
-plot_step_linear_positive()
+    def plot_example(self):
+        x = np.arange(1930, 2023)
+        y = [self.__call__(i, 20) for i in x]
+        plt.plot(x, y)
+        plt.title("Uniform normalization function with value 20")
+        plt.xlabel("Year")
+        plt.ylabel("Normalized Year")
+        plt.grid()
+        plt.show()

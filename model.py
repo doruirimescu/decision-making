@@ -1,11 +1,10 @@
 from parameter import create_parameter, Parameter
-from dataclasses import dataclass
+from pydantic import BaseModel
 from typing import List, Optional
 import user_interaction
 
 
-@dataclass
-class Model:
+class Model(BaseModel):
     name: str
     parameters: List[Parameter]
     storage_folder: Optional[str] = "data/model/"

@@ -1,6 +1,6 @@
 from enum import Enum
-from dataclasses import dataclass, field
-from typing import Any, Optional, Tuple, List
+from typing import Any, Optional, Tuple, List, Union
+from pydantic import BaseModel
 import normalization.normalization as normalization
 import user_interaction
 
@@ -78,14 +78,15 @@ class ParameterType(int, Enum):
     def enum_name() -> str:
         return "parameter type"
 
-@dataclass
-class Parameter:
+
+class Parameter(BaseModel):
     name: str
     type_: ParameterType
     normalizer_type: normalization.NormalizerType
     score: float = 0.0
     value: Any = None
     weight: float = 1.0
+    normalizer: Union[normalization.Normalizer.get_subclasses()]
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "score":
@@ -107,11 +108,10 @@ class Parameter:
         return f"Parameter: {self.name}, {self.type_}"
 
 
-@dataclass
 class NumericalParameter(Parameter):
     value: Optional[float] = None
     value_range: Optional[Tuple[float, float]] = None
-    normalizer_type: normalization.NormalizerType = field(default=normalization.NormalizerType.IDENTITY)
+    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -134,20 +134,19 @@ class NumericalParameter(Parameter):
                     )
         super().__setattr__(__name, __value)
 
-@dataclass
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
-    normalizer_type: normalization.NormalizerType = field(default=normalization.NormalizerType.BOOLEAN)
+    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.BOOLEAN
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
 
-@dataclass
+
 class EnumParameter(Parameter):
     # We need to add a dict that maps the enum names to their values
     value: Optional[str] = None
-    normalizer_type: normalization.NormalizerType = field(default=normalization.NormalizerType.IDENTITY)
-    labels: dict = field(default_factory=dict)
+    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
+    labels: dict
 
     def add_new(self, label: str, value: int) -> None:
         self.labels[label] = value
