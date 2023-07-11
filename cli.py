@@ -30,8 +30,7 @@ model_parser.add_argument('--delete-param', type=str, help='Delete selected mode
 model_parser.add_argument('--add-param', action='store_true', help='Add a new parameter to the selected model')
 
 model_parser.add_argument('--create', action='store_true', help='Create model')
-
-
+model_parser.add_argument('--delete', action='store_true', help='Delete model')
 
 
 # Parse the command-line arguments
@@ -58,3 +57,5 @@ elif args.command == 'model':
             user_interaction.delete_model_param(selected_model, param_to_delete)
         elif args.add_param:
             user_interaction.add_model_param(selected_model)
+        elif args.delete:
+            user_interaction.delete_model(selected_model)

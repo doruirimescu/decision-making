@@ -223,6 +223,10 @@ def describe_model(model_name: str):
         print()
 
 
+def delete_model(model_name: str) -> None:
+    Model.delete(model_name)
+
+
 def edit_model_name(model_name: str):
     model = Model.load(model_name)
     new_name = get_name("new model")
@@ -237,6 +241,7 @@ def delete_model_param(model_name: str, param_name: str):
     model.delete_parameter(param_name)
     model.store()
     print(f"The parameter {param_name} has been deleted from {model_name}.")
+
 
 def add_model_param(model_name: str):
     model = Model.load(model_name)
