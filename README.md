@@ -55,6 +55,10 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 ## CMD
 
 ### Model building
+Create a model: `./cli.py model --create`
+
+Delete a model: `./cli.py model --name <name> --delete`
+
 Describe the model: `./cli.py model --name <name> --describe`
 
 Change the model name: `./cli.py model --name <name> --rename`
