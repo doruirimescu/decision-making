@@ -1,5 +1,5 @@
 from ast import literal_eval
-from typing import List, Tuple
+from typing import List
 
 from colorama import Fore, Style
 
@@ -8,6 +8,11 @@ import normalization.normalization as normalization
 import parameter
 from helpers import indent_n_chars, wrap_text_to_80_chars
 from model import Model
+
+# Constants for debugging
+MODIFY_NORMALIZER = True
+MODIFY_WEIGHT = True
+CREATE_DATASET = True
 
 ##### MODEL BUILDING #####
 
@@ -46,7 +51,6 @@ def create_parameter():
     if additional_parameters is not None:
         print()
         print("This parameter has the following parameters:")
-        print()
         for k, v in additional_parameters.items():
             print(f"{k:15}: {v}")
         print()
@@ -65,7 +69,7 @@ def create_parameter():
     p = eval(f"parameter.{selected_parameter_name}(**{selected_parameter_values})")
 
 
-    if should_change_default(
+    if MODIFY_NORMALIZER and should_change_default(
         "normalizer", p.normalizer.get_type()
         ):
         print()
@@ -118,6 +122,7 @@ def get_name(what: str):
 
 
 def should_change_default(what: str, default_value) -> bool:
+    print()
     answer = input(
         f"The default {what} is {default_value}. \n"
         "Would you like to change it ? (y/n)"
@@ -140,6 +145,7 @@ def is_done() -> bool:
 
 
 def get_parameter_weights(parameters: List) -> None:
+    print()
     print(
         "Next, we are going to define the weights for each parameter.\n"
         "Initially, all the parameters have the same weight (1).\n"
@@ -165,6 +171,7 @@ def get_parameter_weights(parameters: List) -> None:
 
     for i, p in enumerate(parameters):
         print(f"{i}: parameter: {p.name} weight: {p.weight}")
+    print()
 
 
 def create_dataset() -> dataset.Dataset:
@@ -200,7 +207,8 @@ def create_model() -> Model:
     while should_continue:
         parameters.append(create_parameter())
         should_continue = not is_done()
-    get_parameter_weights(parameters)
+    if MODIFY_WEIGHT:
+        get_parameter_weights(parameters)
 
     should_continue = True
     datasets = []
