@@ -1,10 +1,12 @@
-from parameter import Parameter
-from pydantic import BaseModel
-from dataset import Dataset
-from typing import List, Optional, ClassVar
-from storable import Storable
 import os
 import pickle
+from typing import ClassVar, List, Optional
+
+from pydantic import BaseModel
+
+from dataset import Dataset
+from parameter import Parameter
+from storable import Storable
 
 
 class Model(Storable):

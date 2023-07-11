@@ -1,5 +1,6 @@
-import normalization.normalization as normalization
 import unittest
+
+import normalization.normalization as normalization
 
 
 class TestNormalization(unittest.TestCase):

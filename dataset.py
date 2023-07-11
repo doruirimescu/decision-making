@@ -1,5 +1,7 @@
+from typing import ClassVar, List, Optional, Tuple
+
 from pydantic import BaseModel
-from typing import List, Optional, Tuple, ClassVar
+
 from storable import Storable
 
 

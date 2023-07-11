@@ -1,6 +1,8 @@
 from enum import Enum
-from typing import Any, Optional, Tuple, List, Union, Dict
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 from pydantic import BaseModel
+
 import normalization.normalization as normalization
 
 f"TEXT represents parameters that accept free-form text input. \n"

@@ -1,7 +1,8 @@
 import argparse
+
+import normalization.normalization as normalization
 import parameter
 import user_interaction
-import normalization.normalization as normalization
 
 parser = argparse.ArgumentParser(description='Decision making cli.')
 

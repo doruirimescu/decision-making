@@ -1,10 +1,13 @@
+from ast import literal_eval
 from typing import List, Tuple
+
 from colorama import Fore, Style
+
+import dataset
 import normalization.normalization as normalization
 import parameter
 from helpers import indent_n_chars, wrap_text_to_80_chars
 from model import Model
-import dataset
 
 ##### MODEL BUILDING #####
 
@@ -51,7 +54,6 @@ def create_parameter():
     selected_parameter_values = {}
     if additional_parameters is not None:
         for k in additional_parameters.keys():
-            from ast import literal_eval
             answer = input(f"Please enter the value for {k}: ")
             if answer == "":
                 answer = None

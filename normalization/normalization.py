@@ -1,9 +1,10 @@
-from typing import List, Tuple, Optional, Any, Callable, Dict
-from enum import Enum
 import random
-import numpy as np
-import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+import matplotlib.pyplot as plt
+import numpy as np
 from pydantic import BaseModel
 
 
