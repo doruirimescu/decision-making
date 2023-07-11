@@ -1,7 +1,7 @@
 from parameter import Parameter
 from pydantic import BaseModel
 from typing import List, Optional
-import user_interaction
+import os
 import pickle
 
 
@@ -20,8 +20,18 @@ class Model(BaseModel):
     def reorder_parameters(self, new_order: List[int]) -> None:
         self.parameters = [self.parameters[i] for i in new_order]
 
+    def delete_parameter(self, parameter_name: str) -> None:
+        self.parameters = [p for p in self.parameters if p.name != parameter_name]
+
+    def add_parameter(self, parameter: Parameter) -> None:
+        self.parameters.append(parameter)
+
     @classmethod
     def load(cls, model_name: str):
         with open(f"data/model/{model_name}.json", 'rb') as f:
             m = pickle.load(f)
             return m
+
+    @classmethod
+    def delete(cls, model_name: str):
+        os.remove(f"data/model/{model_name}.json")

@@ -213,15 +213,33 @@ def describe_model(model_name: str):
     print(f"{indent_n_chars(model.name, 2)}")
     print()
     print("Parameters:")
+    max_name_len = max([len(p.name) for p in model.parameters])
     for p in model.parameters:
-        description = wrap_text_to_80_chars(p.describe(), 10 - len(p.name), 12)
-        text = indent_n_chars(f"{p.name}: {description}", 2)
+        initial_indent = max_name_len - len(p.name)
+        subsequent_indent = max_name_len + 2
+        desc = wrap_text_to_80_chars(p.describe(), initial_indent, subsequent_indent)
+        text = indent_n_chars(f"{p.name}: {desc}", 2)
         print(f"{text}")
         print()
+
 
 def edit_model_name(model_name: str):
     model = Model.load(model_name)
     new_name = get_name("new model")
     model.name = new_name
-    model.save_model()
-    print(f"The model has been renamed to {new_name}.")
+    model.store()
+    Model.delete(model_name)
+    print(f"The model {model_name} has been renamed to {new_name}.")
+
+
+def delete_model_param(model_name: str, param_name: str):
+    model = Model.load(model_name)
+    model.delete_parameter(param_name)
+    model.store()
+    print(f"The parameter {param_name} has been deleted from {model_name}.")
+
+def add_model_param(model_name: str):
+    model = Model.load(model_name)
+    model.add_parameter(create_parameter())
+    model.store()
+    print(f"The parameter has been added to {model_name}.")

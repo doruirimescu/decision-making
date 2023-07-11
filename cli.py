@@ -2,9 +2,6 @@ import argparse
 import parameter
 import user_interaction
 import normalization.normalization as normalization
-# ./cli.py --help
-# ./cli.py --version
-# ./cli.py --verbose
 
 parser = argparse.ArgumentParser(description='Decision making cli.')
 
@@ -26,9 +23,15 @@ parameters_parser.add_argument('--list', action='store_true', help='List paramet
 model_parser = subparsers.add_parser('model', help='Model related commands')
 model_subparsers = model_parser.add_subparsers(dest='model_command')
 
+model_parser.add_argument('--name', type=str, help='Select model')
+model_parser.add_argument('--describe', action='store_true', help='Describe selected model')
+model_parser.add_argument('--change-name', action='store_true', help='Change selected model name')
+model_parser.add_argument('--delete-param', type=str, help='Delete selected model parameters')
+model_parser.add_argument('--add-param', action='store_true', help='Add a new parameter to the selected model')
+
 model_parser.add_argument('--create', action='store_true', help='Create model')
-model_parser.add_argument('--describe', type=str, help='Describe model')
-model_parser.add_argument('--edit-name', type=str, help='Edit model name')
+
+
 
 
 # Parse the command-line arguments
@@ -44,7 +47,14 @@ elif args.command == 'normalizers':
 elif args.command == 'model':
     if args.create:
         user_interaction.create_model()
-    if args.describe:
-        user_interaction.describe_model(args.describe)
-    if args.edit_name:
-        print("Edit name")
+    elif args.name:
+        selected_model = args.name
+        if args.describe:
+            user_interaction.describe_model(selected_model)
+        elif args.change_name:
+            user_interaction.edit_model_name(selected_model)
+        elif args.delete_param:
+            param_to_delete = args.delete_param
+            user_interaction.delete_model_param(selected_model, param_to_delete)
+        elif args.add_param:
+            user_interaction.add_model_param(selected_model)
