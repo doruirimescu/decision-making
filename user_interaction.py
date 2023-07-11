@@ -4,7 +4,9 @@ import normalization.normalization as normalization
 import parameter
 from helpers import indent_n_chars, wrap_text_to_80_chars
 from model import Model
+import dataset
 
+##### MODEL BUILDING #####
 
 def introduction():
     print(f"{Fore.GREEN}")
@@ -161,6 +163,27 @@ def get_parameter_weights(parameters: List) -> None:
     for i, p in enumerate(parameters):
         print(f"{i}: parameter: {p.name} weight: {p.weight}")
 
+def create_dataset() -> dataset.Dataset:
+    print("Would you like to create a new dataset or use an existing one?")
+    print("0: Create a new dataset")
+    print("1: Use an existing dataset")
+    print("2: No")
+    answer = input("Please enter the number of your choice: ")
+    if answer == "0":
+        dataset_name = input("Please enter the name of the dataset: ")
+        dataset_description = input("Please enter a description of the dataset: ")
+        dataset_path = input("Please enter the path to the dataset: ")
+
+        d = dataset.Dataset(
+            name=dataset_name,
+            description=dataset_description,
+            path=dataset_path
+        )
+        return d
+    elif answer == "1":
+        pass
+    elif answer == "2":
+        return None
 
 def create_model() -> Model:
     introduction()
@@ -173,9 +196,18 @@ def create_model() -> Model:
         parameters.append(create_parameter())
         should_continue = not is_done()
     get_parameter_weights(parameters)
-    m = Model(name=name, parameters=parameters)
+
+    should_continue = True
+    datasets = []
+    while should_continue:
+        d = create_dataset()
+        if d is not None:
+            datasets.append(create_dataset())
+        should_continue = not is_done()
+
+    m = Model(name=name, parameters=parameters, datasets=datasets)
     print("You have created the following model: ", m)
-    m.store()
+    m.store_binary()
     return m
 
 
@@ -227,7 +259,7 @@ def edit_model_name(model_name: str) -> None:
     model = Model.load(model_name)
     new_name = get_name("new model")
     model.name = new_name
-    model.store()
+    model.store_binary()
     Model.delete(model_name)
     print(f"The model {model_name} has been renamed to {new_name}.")
 
@@ -235,12 +267,33 @@ def edit_model_name(model_name: str) -> None:
 def delete_model_param(model_name: str, param_name: str) -> None:
     model = Model.load(model_name)
     model.delete_parameter(param_name)
-    model.store()
+    model.store_binary()
     print(f"The parameter {param_name} has been deleted from {model_name}.")
 
 
 def add_model_param(model_name: str) -> None:
     model = Model.load(model_name)
     model.add_parameter(create_parameter())
-    model.store()
+    model.store_binary()
     print(f"The parameter has been added to {model_name}.")
+
+
+def list_model_datasets(model_name: str) -> None:
+    model = Model.load(model_name)
+    datasets = model.datasets
+    if datasets:
+        print(f"The datasets for {model_name} are:")
+        for d in datasets:
+            print(f"{d.name} : {d.description}")
+    else:
+        print(f"There are no datasets for {model_name}.")
+
+def add_model_dataset(model_name: str) -> None:
+    model = Model.load(model_name)
+    dataset_name = get_name("dataset")
+    dataset_description = input("Please, input the dataset description: ")
+    ds = dataset.Dataset(name=dataset_name, description=dataset_description)
+    model.add_dataset(ds)
+    model.store_binary()
+
+##### DATASET BUILDING #####

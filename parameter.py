@@ -28,26 +28,15 @@ f"ARRAY represents parameters that store a list of values. \n"
 class Parameter(BaseModel):
     name: str
     score: float = 0.0
-    value: Any = None
     weight: float = 1.0
     # How to use object instead of storing type and class separately
     normalizer: normalization.Normalizer = normalization.Identity()
 
-    def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name == "score":
-            if __value < 0:
-                raise ValueError("Score cannot be below 0.")
-            elif __value > 100:
-                raise ValueError("Score cannot be over 100.")
-        super().__setattr__(__name, __value)
+    def evaluate_score(self, value: Any) -> float:
+        return self.normalizer(value)
 
-    def __getattribute__(self, __name: str) -> Any:
-        if __name == "score":
-            return self.normalizer(self.value)
-        return super().__getattribute__(__name)
-
-    def evaluate_score(self) -> None:
-        self.score = self.normalizer(self.value)
+    def is_value_valid(self, value: Any) -> bool:
+        return True
 
     @classmethod
     def get_subclasses_as_list(cls) -> List[str]:
@@ -72,7 +61,6 @@ class Parameter(BaseModel):
 
 
 class NumericalParameter(Parameter):
-    value: Optional[float] = None
     value_range: Optional[Tuple[float, float]] = None
 
     def __setattr__(self, __name: str, __value: Any) -> None:
@@ -81,20 +69,21 @@ class NumericalParameter(Parameter):
                 raise ValueError(
                     f"Minimum value of the range cannot be greater than the maximum value."
                 )
-
-        if __name == "value":
-            if self.value_range is not None:
-                if __value < self.value_range[0]:
-                    raise ValueError(
-                        f"Value cannot be below {self.value_range[0]}, "
-                        f"the minimum value of the range."
-                    )
-                elif __value > self.value_range[1]:
-                    raise ValueError(
-                        f"Value cannot be above {self.value_range[1]}, "
-                        f"the maximum value of the range."
-                    )
         super().__setattr__(__name, __value)
+
+    def is_value_valid(self, value: Any) -> bool:
+        if self.value_range is not None:
+            if value < self.value_range[0]:
+                raise ValueError(
+                    f"Value cannot be below {self.value_range[0]}, "
+                    f"the minimum value of the range."
+                )
+            elif value > self.value_range[1]:
+                raise ValueError(
+                    f"Value cannot be above {self.value_range[1]}, "
+                    f"the maximum value of the range."
+                )
+        return True
 
     @classmethod
     def get_description(cls) -> str:
@@ -119,6 +108,11 @@ class BooleanParameter(Parameter):
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
+
+    def is_value_valid(self, value: Any) -> bool:
+        if not isinstance(value, bool):
+            raise ValueError(f"Value must be a boolean.")
+        return True
 
     @classmethod
     def get_description(cls) -> str:
