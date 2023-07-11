@@ -1,4 +1,4 @@
-from model import Model, create_model
+from model import Model
 import user_interaction
 import pickle
 
@@ -10,6 +10,6 @@ def load_model(model_name: str):
 
 if __name__ == "__main__":
     user_interaction.introduction()
-    m = create_model()
+    m = user_interaction.create_model()
     with open(m.get_storage_file_path(), 'wb') as f:
         p = pickle.dump(m, f, protocol=pickle.HIGHEST_PROTOCOL)

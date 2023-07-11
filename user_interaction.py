@@ -3,6 +3,8 @@ from colorama import Fore, Style
 import normalization.normalization as normalization
 import parameter
 from helpers import indent_n_chars, wrap_text_to_80_chars
+from model import Model
+
 
 def introduction():
     print(f"{Fore.GREEN}")
@@ -10,7 +12,7 @@ def introduction():
     print("The decision making model consists of a few stages:")
     print("1. Model building stage. Here, you will define the model and its parameters.")
     print("2. Data collection stage. Here, you will collect data for the model.")
-    print("3. Model evaluation stage. Here, you will evaluate the model.")
+    print("3. Data analysis. Here, you will evaluate the model.")
     print("4. Decision making stage. Here, you will make a decision based on the model.")
     print(f"{Style.RESET_ALL}")
     print("")
@@ -64,6 +66,7 @@ def create_parameter():
         ):
         p.normalizer = create_normalizer()
     return p
+
 
 def create_normalizer():
     print()
@@ -130,10 +133,6 @@ def input_model_parameters():
     print("")
 
 
-def model_created(m):
-    print("You have created the following model: ", m)
-
-
 def is_done():
     r = input("Enter 'done' if you are done, or press enter to continue: ")
     print("")
@@ -168,6 +167,20 @@ def get_parameter_weights(parameters: List):
         print(f"{i}: parameter: {p.name} weight: {p.weight}")
 
 
+def create_model() -> Model:
+    name = get_name("model")
+    input_model_parameters()
+    should_continue = True
+    parameters = []
+    while should_continue:
+        parameters.append(create_parameter())
+        should_continue = not is_done()
+    get_parameter_weights(parameters)
+    m = Model(name=name, parameters=parameters)
+    print("You have created the following model: ", m)
+    return m
+
+
 def list_class(t):
     for subclass in t.__subclasses__():
         name = subclass.__name__
@@ -185,8 +198,21 @@ def list_class(t):
         if not d:
             print()
             continue
-        fields="\n".join([f"{k}:{v}" for k,v in d.items()])
+        fields="\n".join([f"{k} : {v}" for k,v in d.items()])
         FIELDS = "  Fields"
         initial_indent = 25 - len(FIELDS)
         print(f"{FIELDS}{wrap_text_to_80_chars(fields, initial_indent, subsequent_indent)}")
+        print()
+
+
+def describe_model(model_name: str):
+    model = Model.load_model(model_name)
+    print(f"Name:")
+    print(f"{indent_n_chars(model.name, 2)}")
+    print()
+    print("Parameters:")
+    for p in model.parameters:
+        description = wrap_text_to_80_chars(p.describe(), 10 - len(p.name), 12)
+        text = indent_n_chars(f"{p.name}: {description}", 2)
+        print(f"{text}")
         print()

@@ -153,8 +153,8 @@ class LinearPositive(Normalizer):
     @classmethod
     def get_description(cls) -> str:
         return (
-            "Linear positive function. Returns the value placed on a line defined by the given range. \n"
-            "The first value of the range is mapped to 0, the second value of the range is mapped to 100. \n"
+            "Linear positive function. Returns the value placed on a line defined by the given range. "
+            "The first value of the range is mapped to 0, the second value of the range is mapped to 100. "
             "Values of x are mapped on this line."
         )
 
@@ -203,6 +203,12 @@ class Uniform(Normalizer):
 
     def __call__(self, x: int) -> float:
         return self.uniform_value
+
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            "Uniform function. Returns the same value for all inputs."
+        )
 
     def plot_example(self):
         x = np.arange(1930, 2023)

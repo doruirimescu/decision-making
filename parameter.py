@@ -24,6 +24,7 @@ f"ARRAY represents parameters that store a list of values. \n"
 "Array parameters can be used to model multi-select lists, \n"
 "or to capture multiple values for a single parameter."
 
+
 class Parameter(BaseModel):
     name: str
     score: float = 0.0
@@ -65,6 +66,9 @@ class Parameter(BaseModel):
     @classmethod
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return cls.get_default_fields_and_their_description()
+
+    def describe(self):
+        return self.__class__.get_description()
 
 
 class NumericalParameter(Parameter):
