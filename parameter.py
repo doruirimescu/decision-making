@@ -1,93 +1,36 @@
 from enum import Enum
-from typing import Any, Optional, Tuple, List, Union
+from typing import Any, Optional, Tuple, List, Union, Dict
 from pydantic import BaseModel
 import normalization.normalization as normalization
-import user_interaction
 
+f"TEXT represents parameters that accept free-form text input. \n"
+"Text parameters can capture qualitative information, user comments, or subjective evaluations."
 
-class ParameterType(int, Enum):
-    # Parameter type enum
-    NUMERICAL = 1
-    BOOLEAN = 2
-    ENUM = 3
-    TEXT = 4
-    DATE_TIME = 5
-    RANGE = 6
-    PERCENTAGE = 7
-    RATIO = 8
-    ARRAY = 9
+f"DATE_TIME represents parameters that store dates or timestamps. \n"
+"Date/time parameters can be used to capture time-sensitive factors, \n"
+"deadlines, or temporal aspects of decision-making."
 
-    def __repr__(self) -> str:
-        return f"{self.name}"
+f"RANGE represents parameters that define a range of values, \n"
+" such as a minimum and maximum value. Range parameters can be used \n"
+" to model variables with bounds, such as acceptable values or performance thresholds."
 
-    @property
-    def description(self) -> str:
-        if self.name == "NUMERICAL":
-            return (
-                f"{self.name} represents parameters that have numeric values. \n"
-                "Examples could be values related to costs, quantities, ratings, or scores."
-            )
-        elif self.name == "BOOLEAN":
-            return (
-                f"{self.name} represents parameters that have binary values, typically true or false. \n"
-                "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
-            )
-        elif self.name == "ENUM":
-            return (
-                f"{self.name} represents parameters that have a set of predefined labels or categories. \n"
-                "Users can choose from a list of options to assign a value to the parameter. \n"
-                "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
-            )
-        elif self.name == "TEXT":
-            return (
-                f"{self.name} represents parameters that accept free-form text input. \n"
-                "Text parameters can capture qualitative information, user comments, or subjective evaluations."
-            )
-        elif self.name == "DATE_TIME":
-            return (
-                f"{self.name} represents parameters that store dates or timestamps. \n"
-                "Date/time parameters can be used to capture time-sensitive factors, \n"
-                "deadlines, or temporal aspects of decision-making."
-            )
-        elif self.name == "RANGE":
-            return (
-                f"{self.name} represents parameters that define a range of values, \n"
-                " such as a minimum and maximum value. Range parameters can be used \n"
-                " to model variables with bounds, such as acceptable values or performance thresholds."
-            )
-        elif self.name == "PERCENTAGE":
-            return (
-                f"{self.name} represents parameters that represent values as a percentage of a whole. \n"
-                " Percentage parameters are useful for modeling proportions, allocations, or relative weights."
-            )
-        elif self.name == "RATIO":
-            return (
-                f"{self.name} represents parameters that express a relationship between two quantities. \n"
-                "Ratios can be used to model comparative measures, efficiency ratios, or trade-offs between factors."
-            )
-        elif self.name == "ARRAY":
-            return (
-                f"{self.name} represents parameters that store a list of values. \n"
-                "Array parameters can be used to model multi-select lists, \n"
-                "or to capture multiple values for a single parameter."
-            )
-        else:
-            return "Invalid parameter type."
+f"PERCENTAGE represents parameters that represent values as a percentage of a whole. \n"
+" Percentage parameters are useful for modeling proportions, allocations, or relative weights."
 
-    @staticmethod
-    def enum_name() -> str:
-        return "parameter type"
+f"RATIO represents parameters that express a relationship between two quantities. \n"
+"Ratios can be used to model comparative measures, efficiency ratios, or trade-offs between factors."
 
+f"ARRAY represents parameters that store a list of values. \n"
+"Array parameters can be used to model multi-select lists, \n"
+"or to capture multiple values for a single parameter."
 
 class Parameter(BaseModel):
     name: str
-    type_: ParameterType
-    normalizer_type: normalization.NormalizerType
     score: float = 0.0
     value: Any = None
     weight: float = 1.0
     # How to use object instead of storing type and class separately
-    normalizer: Union[normalization.Normalizer.get_subclasses()]
+    normalizer: normalization.Normalizer = normalization.Identity()
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "score":
@@ -99,20 +42,34 @@ class Parameter(BaseModel):
 
     def __getattribute__(self, __name: str) -> Any:
         if __name == "score":
-            return normalization.get_normalizer(self.normalizer_type)(self.value)
+            return self.normalizer(self.value)
         return super().__getattribute__(__name)
 
     def evaluate_score(self) -> None:
-        self.score = normalization.get_normalizer(self.normalizer_type)(self.value)
+        self.score = self.normalizer(self.value)
 
-    def __repr__(self) -> str:
-        return f"Parameter: {self.name}, {self.type_}"
+    @classmethod
+    def get_subclasses_as_list(cls):
+        return [subclass.__name__ for subclass in cls.__subclasses__()]
+
+    @classmethod
+    def get_description(cls) -> str:
+        return "Parameter description"
+
+    @classmethod
+    def get_default_fields_and_their_description(cls) -> Dict[str, str]:
+        return {
+            "name": "The name of the parameter (e.g. 'price')."
+        }
+
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        return None
 
 
 class NumericalParameter(Parameter):
     value: Optional[float] = None
     value_range: Optional[Tuple[float, float]] = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -135,63 +92,59 @@ class NumericalParameter(Parameter):
                     )
         super().__setattr__(__name, __value)
 
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            f"{cls.__name__} represents parameters that have numeric values. \n"
+            "Examples could be values related to costs, quantities, ratings, or scores."
+        )
+
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        d = cls.get_default_fields_and_their_description()
+        d.update({
+            "value_range": "The range of values (min, max) that the parameter's \n\t\t "
+            "value can take. (e.g. (0, 100) for a price parameter)."
+            })
+        return d
+
+
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.BOOLEAN
+    normalizer: normalization.Normalizer = normalization.Boolean()
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
+
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            f"{cls.__name__} represents parameters that have binary values, typically true or false. \n"
+            "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
+        )
 
 
 class EnumParameter(Parameter):
     # We need to add a dict that maps the enum names to their values
     value: Optional[str] = None
-    normalizer_type: normalization.NormalizerType = normalization.NormalizerType.IDENTITY
     labels: dict
 
     def add_new(self, label: str, value: int) -> None:
         self.labels[label] = value
 
-def create_parameter() -> Parameter:
-    name_ = user_interaction.get_name("parameter")
-    type_ = user_interaction.create_type(ParameterType)
+    @classmethod
+    def get_description(cls) -> str:
+        return (
+            f"{cls.__name__} represents parameters that have a set of predefined labels or categories. \n"
+            "Users can choose from a list of options to assign a value to the parameter. \n"
+            "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
+        )
 
-    if type_ == ParameterType.NUMERICAL:
-        range_ = user_interaction.get_range("parameter")
-        parameter = NumericalParameter(name=name_, type_=type_, value_range=range_)
-        should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer_type.value
-            )
-        if should_change_default:
-            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
-        return NumericalParameter(name=name_, type_=type_, value_range=range_)
-
-    elif type_ == ParameterType.BOOLEAN:
-        parameter = BooleanParameter(name=name_, type_=type_)
-        should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer_type.value
-            )
-        if should_change_default:
-            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
-        return BooleanParameter(name=name_, type_=type_)
-
-    elif type_ == ParameterType.ENUM:
-        parameter = EnumParameter(name=name_, type_=type_)
-        should_change_default = user_interaction.should_change_default(
-            "normalizer", parameter.normalizer_type.value
-            )
-        if should_change_default:
-            parameter.normalizer_type = user_interaction.create_type(normalization.NormalizerType)
-
-        print("Please enter the enum values. Enter 'q' to stop.")
-        while True:
-            label = input("Enter the label: ")
-            if label == "q":
-                break
-            value = input("Enter the value: ")
-            parameter.add_new(label, value)
-
-        return parameter
-
-
-    return Parameter(name=name_, type_=type_)
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        d = cls.get_default_fields_and_their_description()
+        d.update({
+            "labels": "Dictionary of labels and their corresponding values. \n\t\t "
+            "value should be between 0-100 and map directly to a score."
+            })
+        return d

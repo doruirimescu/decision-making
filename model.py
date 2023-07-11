@@ -1,4 +1,4 @@
-from parameter import create_parameter, Parameter
+from parameter import Parameter
 from pydantic import BaseModel
 from typing import List, Optional
 import user_interaction
@@ -22,6 +22,7 @@ def create_model() -> Model:
     should_continue = True
     parameters = []
     while should_continue:
+        from user_interaction import create_parameter
         parameters.append(create_parameter())
         should_continue = not user_interaction.is_done()
     user_interaction.get_parameter_weights(parameters)
