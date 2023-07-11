@@ -41,8 +41,6 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 - [ ] Parameters can be normalized automatically by relative comparison. Or absolute comparison can be made by user
 - [ ] For each parameter, user specifies if higher value is better
 
-
-
 ## Data building
 * For a chosen (created) model, data is entered
 
@@ -51,6 +49,28 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 ### TODO
 - [ ] Radar chart is created
 - [ ] Filtering of data points based on parameter (ascending, descending, outlier)
+
+---
+# User interface
+### CMD
+We need a command-line interface, cli.py to:
+
+`./cli.py model <options>`
+- [ ] create model (and store): `--create` 
+- [ ] load model `--load <name>`
+- [ ] edit model (and store) `--edit <name>`
+
+`./cli.py parameter`
+- [ ] list and describe parameters `--list`
+
+`./cli.py normalizer`
+- [ ] list and describe normalizers `--list`
+- [ ] show normalizer example `--example`
+
+We can add cli.py with argparse for this
+
+### GUI
+
 
 ---
 ## Use cases
