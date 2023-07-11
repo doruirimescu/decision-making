@@ -82,7 +82,7 @@ TODO:
 
 ### Dataset building
 TODO:
-- [ ] Add datapoint to dataset `./cli.py dataset --name <name> --datapoint-add <name>` **should we change the previous ones to be --dataset --add ?**
+- [ ] Add datapoint to dataset `./cli.py dataset --name <name> --datapoint-add <name>`
 - [ ] Rename datapoint of dataset `./cli.py dataset --name <name> --datapoint-rename <name>`
 
 ### GUI
