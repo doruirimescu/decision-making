@@ -36,6 +36,12 @@ model_parser.add_argument('--add-dataset', action='store_true', help='Add datase
 model_parser.add_argument('--list-datasets', action='store_true', help='List datasets in model')
 model_parser.add_argument('--delete-dataset', type=str, help='Add dataset to model')
 
+# Create parser for "dataset" command
+dataset_parser = subparsers.add_parser('dataset', help='Dataset related commands')
+dataset_parser.add_argument('--name', type=str, help='Select dataset')
+dataset_parser.add_argument('--add-datapoint', action='store_true', help='Rename datapoint')
+# dataset_parser.add_argument('--rename-datapoint', type=str, help='Create dataset')
+
 # Parse the command-line arguments
 args = parser.parse_args()
 
@@ -68,3 +74,10 @@ elif args.command == 'model':
             user_interaction.list_model_datasets(selected_model)
         elif args.delete_dataset:
             user_interaction.delete_model_dataset(selected_model, args.delete_dataset)
+
+elif args.command == 'dataset':
+    if args.name:
+        selected_dataset = args.name
+        if args.add_datapoint:
+            print(f"Add datapoint to {selected_dataset}")
+            # user_interaction.add_dataset_datapoint(selected_dataset)

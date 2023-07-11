@@ -16,6 +16,16 @@ class Model(Storable):
             for i, dataset in enumerate(datasets):
                 datasets[i] = Dataset(**Dataset.load_json(dataset.name))
         data["datasets"] = datasets
+
+        # Validate all data points for each dataset according to parameters
+        if datasets:
+            # 1. The length of all datapoints must be equal to the number of parameters
+
+            # 2. The length of all scores must be equal to the number of parameters
+
+            # 3. The name of each datapoint.point must be equal to the name of the parameter
+
+            pass
         super().__init__(**data)
 
     def reorder_parameters(self, new_order: List[int]) -> None:
