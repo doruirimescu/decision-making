@@ -28,6 +28,7 @@ model_subparsers = model_parser.add_subparsers(dest='model_command')
 
 model_parser.add_argument('--create', action='store_true', help='Create model')
 model_parser.add_argument('--describe', type=str, help='Describe model')
+model_parser.add_argument('--edit-name', type=str, help='Edit model name')
 
 
 # Parse the command-line arguments
@@ -45,3 +46,5 @@ elif args.command == 'model':
         user_interaction.create_model()
     if args.describe:
         user_interaction.describe_model(args.describe)
+    if args.edit_name:
+        print("Edit name")

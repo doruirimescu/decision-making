@@ -179,6 +179,7 @@ def create_model() -> Model:
     get_parameter_weights(parameters)
     m = Model(name=name, parameters=parameters)
     print("You have created the following model: ", m)
+    m.store()
     return m
 
 
@@ -207,7 +208,7 @@ def list_class(t):
 
 
 def describe_model(model_name: str):
-    model = Model.load_model(model_name)
+    model = Model.load(model_name)
     print(f"Name:")
     print(f"{indent_n_chars(model.name, 2)}")
     print()
@@ -217,3 +218,10 @@ def describe_model(model_name: str):
         text = indent_n_chars(f"{p.name}: {description}", 2)
         print(f"{text}")
         print()
+
+def edit_model_name(model_name: str):
+    model = Model.load(model_name)
+    new_name = get_name("new model")
+    model.name = new_name
+    model.save_model()
+    print(f"The model has been renamed to {new_name}.")
