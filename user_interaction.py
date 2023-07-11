@@ -128,18 +128,13 @@ def get_range(what: str):
     return (float(r[0]), float(r[1])) if len(r) > 1 else None
 
 
-def input_model_parameters():
-    print("Next, input the model parameters. When you are done, enter 'done'.")
-    print("")
-
-
-def is_done():
+def is_done() -> bool:
     r = input("Enter 'done' if you are done, or press enter to continue: ")
     print("")
     return r == "done"
 
 
-def get_parameter_weights(parameters: List):
+def get_parameter_weights(parameters: List) -> None:
     print(
         "Next, we are going to define the weights for each parameter.\n"
         "Initially, all the parameters have the same weight (1).\n"
@@ -170,7 +165,8 @@ def get_parameter_weights(parameters: List):
 def create_model() -> Model:
     introduction()
     name = get_name("model")
-    input_model_parameters()
+    print("Next, input the model parameters. When you are done, enter 'done'.")
+    print("")
     should_continue = True
     parameters = []
     while should_continue:
@@ -183,7 +179,7 @@ def create_model() -> Model:
     return m
 
 
-def list_class(t):
+def list_class(t) -> None:
     for subclass in t.__subclasses__():
         name = subclass.__name__
         print(f"{name}:")
@@ -207,7 +203,7 @@ def list_class(t):
         print()
 
 
-def describe_model(model_name: str):
+def describe_model(model_name: str) -> None:
     model = Model.load(model_name)
     print(f"Name:")
     print(f"{indent_n_chars(model.name, 2)}")
@@ -227,7 +223,7 @@ def delete_model(model_name: str) -> None:
     Model.delete(model_name)
 
 
-def edit_model_name(model_name: str):
+def edit_model_name(model_name: str) -> None:
     model = Model.load(model_name)
     new_name = get_name("new model")
     model.name = new_name
@@ -236,14 +232,14 @@ def edit_model_name(model_name: str):
     print(f"The model {model_name} has been renamed to {new_name}.")
 
 
-def delete_model_param(model_name: str, param_name: str):
+def delete_model_param(model_name: str, param_name: str) -> None:
     model = Model.load(model_name)
     model.delete_parameter(param_name)
     model.store()
     print(f"The parameter {param_name} has been deleted from {model_name}.")
 
 
-def add_model_param(model_name: str):
+def add_model_param(model_name: str) -> None:
     model = Model.load(model_name)
     model.add_parameter(create_parameter())
     model.store()
