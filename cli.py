@@ -1,6 +1,6 @@
 import argparse
 import parameter
-from user_interaction import list_class, describe_model
+import user_interaction
 import normalization.normalization as normalization
 # ./cli.py --help
 # ./cli.py --version
@@ -36,12 +36,12 @@ args = parser.parse_args()
 # Perform actions based on the parsed command
 if args.command == 'parameters':
     if args.list:
-        list_class(parameter.Parameter)
+        user_interaction.list_class(parameter.Parameter)
 elif args.command == 'normalizers':
     if args.list:
-        list_class(normalization.Normalizer)
+        user_interaction.list_class(normalization.Normalizer)
 elif args.command == 'model':
-    if args.model_command == 'create':
-        print("Create model")
+    if args.create:
+        user_interaction.create_model()
     if args.describe:
-        describe_model(args.describe)
+        user_interaction.describe_model(args.describe)

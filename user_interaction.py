@@ -168,6 +168,7 @@ def get_parameter_weights(parameters: List):
 
 
 def create_model() -> Model:
+    introduction()
     name = get_name("model")
     input_model_parameters()
     should_continue = True
