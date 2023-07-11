@@ -184,7 +184,9 @@ def create_dataset() -> dataset.Dataset:
         d.store_json()
         return d
     elif answer == "1":
-        pass
+        answer = input("Please enter the name of the dataset: ")
+        d = dataset.Dataset(**dataset.Dataset.load_json(answer))
+        return d
     elif answer == "2":
         return None
 
@@ -244,14 +246,13 @@ def describe_model(model_name: str) -> None:
     print(f"{indent_n_chars(model.name, 2)}")
     print()
     print("Parameters:")
-    max_name_len = max([len(p.name) for p in model.parameters])
     for p in model.parameters:
-        initial_indent = max_name_len - len(p.name)
-        subsequent_indent = max_name_len + 2
-        desc = wrap_text_to_80_chars(p.describe(), initial_indent, subsequent_indent)
-        text = indent_n_chars(f"{p.name}: {desc}", 2)
-        print(f"{text}")
+        print(f"  {p.__repr__()}")
         print()
+
+    print("Datasets:")
+    for d in model.datasets:
+        print(f"  {d.__repr__()}")
 
 
 def delete_model(model_name: str) -> None:

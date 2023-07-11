@@ -29,7 +29,6 @@ f"ARRAY represents parameters that store a list of values. \n"
 
 class Parameter(BaseModel):
     name: str
-    score: float = 0.0
     weight: float = 1.0
     # How to use object instead of storing type and class separately
     normalizer: normalization.Normalizer = normalization.Identity()
@@ -58,8 +57,12 @@ class Parameter(BaseModel):
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return cls.get_default_fields_and_their_description()
 
+    @classmethod
+    def get_class_name(cls):
+        return cls.__name__
+
     def describe(self):
-        return self.__class__.get_description()
+        return f"Name: {self.name} type: {self.get_class_name()} value range: {self.value_range}"
 
 
 class NumericalParameter(Parameter):

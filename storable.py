@@ -29,8 +29,8 @@ class Storable(BaseModel):
 
     @classmethod
     def load_json(cls, model_name: str):
-        with open(f"{cls.storage_folder}/{model_name}.json", 'rb') as f:
-            pass
+        with open(f"{cls.storage_folder}/{model_name}.json", 'r') as f:
+            return json.load(f)
 
     @classmethod
     def delete_binary(cls, model_name: str) -> None:

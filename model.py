@@ -24,7 +24,9 @@ class Model(Storable):
         self.parameters.append(parameter)
 
     def add_dataset(self, dataset: Dataset) -> None:
-        self.datasets.append(dataset)
+        if self.datasets:
+            self.datasets.append(dataset)
 
     def delete_dataset(self, dataset_name: str) -> None:
-        self.datasets = [d for d in self.datasets if d.name != dataset_name]
+        if self.datasets:
+            self.datasets = [d for d in self.datasets if d.name != dataset_name]
