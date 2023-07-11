@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, ClassVar
+from storable import Storable
 
 
 class DataPoint(BaseModel):
@@ -8,11 +9,10 @@ class DataPoint(BaseModel):
     scores: Optional[Tuple] = None
 
 
-class Dataset(BaseModel):
-    name: str
+class Dataset(Storable):
     description: Optional[str] = None
     data_points: Optional[List[DataPoint]] = None
-    storage_folder: Optional[str] = "data/dataset/"
+    storage_folder: ClassVar[str] = "data/dataset/"
 
     def add_data_point(self, data_point: DataPoint) -> None:
         if self.data_points is None:
