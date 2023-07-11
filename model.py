@@ -10,6 +10,14 @@ class Model(Storable):
     datasets: Optional[List[Dataset]]
     storage_folder: ClassVar[str] = "data/model/"
 
+    def __init__(self, **data):
+        datasets = data.get("datasets")
+        if datasets:
+            for i, dataset in enumerate(datasets):
+                datasets[i] = Dataset(**Dataset.load_json(dataset.name))
+        data["datasets"] = datasets
+        super().__init__(**data)
+
     def reorder_parameters(self, new_order: List[int]) -> None:
         self.parameters = [self.parameters[i] for i in new_order]
 

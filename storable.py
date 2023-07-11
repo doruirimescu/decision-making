@@ -25,6 +25,7 @@ class Storable(BaseModel):
     def load_binary(cls, model_name: str):
         with open(f"{cls.storage_folder}/{model_name}.bin", 'rb') as f:
             m = pickle.load(f)
+            m.__init__(**m.__dict__)
             return m
 
     @classmethod
