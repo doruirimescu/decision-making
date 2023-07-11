@@ -52,22 +52,29 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 
 ---
 # User interface
-### CMD
-We need a command-line interface, cli.py to:
+## CMD
 
-`./cli.py model <options>`
-- [ ] create model (and store): `--create` 
-- [ ] load model `--load <name>`
-- [ ] edit model (and store) `--edit <name>`
+### Model building
+Describe the model: `./cli.py model --name <name> --describe`
 
-`./cli.py parameter`
-- [ ] list and describe parameters `--list`
+Change the model name: `./cli.py model --name <name> --rename`
 
-`./cli.py normalizer`
-- [ ] list and describe normalizers `--list`
-- [ ] show normalizer example `--example`
+Delete a model parameter: `./cli.py model --name <name> --delete-param <param_name>`
 
-We can add cli.py with argparse for this
+Add a model parameter: `./cli.py model --name <name> --add-param`
+
+List (describe) all parameters: `./cli.py parameters --list`
+
+List (describe) all normalizers: `./cli.py normalizers --list`
+
+TODO:
+- [ ] Draw normalizer example
+
+### Dataset building
+- [ ] Add dataset to model
+- [ ] List model datasets
+- [ ] Rename model dataset
+- [ ] Add new dataset to model
 
 ### GUI
 
