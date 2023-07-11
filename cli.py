@@ -25,7 +25,7 @@ model_subparsers = model_parser.add_subparsers(dest='model_command')
 
 model_parser.add_argument('--name', type=str, help='Select model')
 model_parser.add_argument('--describe', action='store_true', help='Describe selected model')
-model_parser.add_argument('--change-name', action='store_true', help='Change selected model name')
+model_parser.add_argument('--rename', action='store_true', help='Change selected model name')
 model_parser.add_argument('--delete-param', type=str, help='Delete selected model parameters')
 model_parser.add_argument('--add-param', action='store_true', help='Add a new parameter to the selected model')
 
@@ -51,7 +51,7 @@ elif args.command == 'model':
         selected_model = args.name
         if args.describe:
             user_interaction.describe_model(selected_model)
-        elif args.change_name:
+        elif args.rename:
             user_interaction.edit_model_name(selected_model)
         elif args.delete_param:
             param_to_delete = args.delete_param
