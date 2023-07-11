@@ -33,13 +33,9 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 
 ### TODO
 - [ ] Model can be based on SWOT
-- [x] Each model parameter is normalized from 0 to 100
-- [ ] Each model parameter can be numeric or textual
-- [x] The user is guided to create a normalized parameter
-- [x] All parameters are expressed in terms of rewards
 - [ ] All parameters can be distributed on a circle with radius of 100
 - [ ] Parameters can be normalized automatically by relative comparison. Or absolute comparison can be made by user
-- [ ] For each parameter, user specifies if higher value is better
+- [ ] ADD TESTS (unit, integration)
 
 ## Data building
 * For a chosen (created) model, data is entered
@@ -72,6 +68,8 @@ List (describe) all parameters: `./cli.py parameters --list`
 List (describe) all normalizers: `./cli.py normalizers --list`
 
 TODO:
+- [ ] Add tests
+- [ ] Parameters should be storable just like datasets
 - [ ] Draw normalizer example
 - [ ] Fully automated add-param for scripting
 
