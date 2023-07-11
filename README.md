@@ -7,7 +7,7 @@
 * Parts: model building, data building, data analysis
 
 ### Workflow:
-1. Model building: Name the model, add parameters, add weights, store the model
+1. Model building: Name the model, add parameters, add weights, create/link datasets, store the model
 2. Data building: Gather data, add datapoints to the dataset corresponding to the selected model
 3. Data analysis: Filter data, remove outliers, rank, plot, chart
 
@@ -67,17 +67,23 @@ List (describe) all parameters: `./cli.py parameters --list`
 
 List (describe) all normalizers: `./cli.py normalizers --list`
 
+Add dataset to model `./cli.py model --name <name> --add-dataset`
+
+List datasets of model `./cli.py model --name <name> --list-datasets`
+
+Delete dataset from model `./cli.py model --name <name> --delete-dataset`
+
 TODO:
 - [ ] Add tests
 - [ ] Parameters should be storable just like datasets
 - [ ] Draw normalizer example
 - [ ] Fully automated add-param for scripting
 
+
 ### Dataset building
 TODO:
-- [ ] Add dataset to model ./cli.py model --name <name> --dataset-add <name>`
-- [ ] List model datasets ./cli.py model --name <name> --dataset-list`
-- [ ] Rename model dataset ./cli.py model --name <name> --dataset-rename <name>`
+- [ ] Add datapoint to dataset `./cli.py dataset --name <name> --datapoint-add <name>` **should we change the previous ones to be --dataset --add ?**
+- [ ] Rename datapoint of dataset `./cli.py dataset --name <name> --datapoint-rename <name>`
 
 ### GUI
 TODO
