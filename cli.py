@@ -22,7 +22,6 @@ parameters_parser.add_argument('--list', action='store_true', help='List paramet
 
 # Create parser for "model" command
 model_parser = subparsers.add_parser('model', help='Model related commands')
-model_subparsers = model_parser.add_subparsers(dest='model_command')
 
 model_parser.add_argument('--name', type=str, help='Select model')
 model_parser.add_argument('--describe', action='store_true', help='Describe selected model')
@@ -35,6 +34,7 @@ model_parser.add_argument('--delete', action='store_true', help='Delete model')
 
 model_parser.add_argument('--add-dataset', action='store_true', help='Add dataset to model')
 model_parser.add_argument('--list-datasets', action='store_true', help='List datasets in model')
+model_parser.add_argument('--delete-dataset', type=str, help='Add dataset to model')
 
 # Parse the command-line arguments
 args = parser.parse_args()
@@ -66,3 +66,5 @@ elif args.command == 'model':
             user_interaction.add_model_dataset(selected_model)
         elif args.list_datasets:
             user_interaction.list_model_datasets(selected_model)
+        elif args.delete_dataset:
+            user_interaction.delete_model_dataset(selected_model, args.delete_dataset)

@@ -30,6 +30,8 @@ class Model(Storable):
     def add_dataset(self, dataset: Dataset) -> None:
         if self.datasets:
             self.datasets.append(dataset)
+        else:
+            self.datasets = [dataset]
 
     def delete_dataset(self, dataset_name: str) -> None:
         if self.datasets:

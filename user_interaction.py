@@ -296,16 +296,20 @@ def list_model_datasets(model_name: str) -> None:
     if datasets:
         print(f"The datasets for {model_name} are:")
         for d in datasets:
-            print(f"{d.name} : {d.description}")
+            print(f"{d.__repr__()}")
     else:
         print(f"There are no datasets for {model_name}.")
 
+
 def add_model_dataset(model_name: str) -> None:
     model = Model.load_binary(model_name)
-    dataset_name = get_name("dataset")
-    dataset_description = input("Please, input the dataset description: ")
-    ds = dataset.Dataset(name=dataset_name, description=dataset_description)
+    ds = create_dataset()
     model.add_dataset(ds)
     model.store_binary()
 
-##### DATASET BUILDING #####
+
+def delete_model_dataset(model_name: str, dataset_name: str) -> None:
+    model = Model.load_binary(model_name)
+    model.delete_dataset(dataset_name)
+    model.store_binary()
+    print(f"The dataset {dataset_name} has been deleted from {model_name}.")
