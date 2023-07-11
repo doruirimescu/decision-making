@@ -76,8 +76,8 @@ class RelativeAscending(Normalizer):
     @classmethod
     def get_description(cls) -> str:
         return (
-            "Relative ascending function. Returns the value relative to the minimum \n"
-            " and maximum values. 0-100"
+            "Relative ascending function. Returns the value relative to the minimum "
+            "and maximum values. 0-100"
         )
 
 
@@ -109,7 +109,7 @@ class Step(Normalizer):
     @classmethod
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return {"threshold": (
-            "Threshold below which all values are zero. \n"
+            "Threshold below which all values are zero. "
             "Above or equal which all values are 100"
             )}
 

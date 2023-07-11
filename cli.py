@@ -1,7 +1,7 @@
 import argparse
 import parameter
-from user_interaction import list_parameters
-
+from user_interaction import list_class
+import normalization.normalization as normalization
 # ./cli.py --help
 # ./cli.py --version
 # ./cli.py --verbose
@@ -18,6 +18,10 @@ subparsers = parser.add_subparsers(dest='command')
 parameters_parser = subparsers.add_parser('parameters', help='Parameters related commands')
 parameters_parser.add_argument('--list', action='store_true', help='List parameters and their descriptions')
 
+# Create parser for "normalizers" command
+parameters_parser = subparsers.add_parser('normalizers', help='Parameters related commands')
+parameters_parser.add_argument('--list', action='store_true', help='List parameters and their descriptions')
+
 # Create parser for "model" command
 model_parser = subparsers.add_parser('model', help='Model related commands')
 model_parser.add_argument('--create', action='store_true', help='Create model')
@@ -28,7 +32,10 @@ args = parser.parse_args()
 # Perform actions based on the parsed command
 if args.command == 'parameters':
     if args.list:
-        list_parameters()
+        list_class(parameter.Parameter)
+elif args.command == 'normalizers':
+    if args.list:
+        list_class(normalization.Normalizer)
 elif args.command == 'model':
     if args.create:
         print("Create model")

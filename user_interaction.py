@@ -168,16 +168,25 @@ def get_parameter_weights(parameters: List):
         print(f"{i}: parameter: {p.name} weight: {p.weight}")
 
 
-def list_parameters():
-    for subclass in parameter.Parameter.__subclasses__():
-        print(f"{subclass.__name__}")
-        print()
-        print(indent_n_chars("Description:", 2))
+def list_class(t):
+    for subclass in t.__subclasses__():
+        name = subclass.__name__
+        print(f"{name}:")
+        DESCRIPTION = "  Description"
+        initial_indent = 25 - len(DESCRIPTION)
+        subsequent_indent = 25
+        text = wrap_text_to_80_chars(
+            subclass.get_description(),
+            initial_indent,
+            subsequent_indent)
+        print(f'{DESCRIPTION}{text}')
 
-        print(f"{indent_n_chars(wrap_text_to_80_chars(subclass.get_description()), 2)}")
-        print()
-        print(indent_n_chars("Fields:", 2))
         d = subclass.get_fields_and_their_description()
-        for key, value in d.items():
-            print(indent_n_chars(f"{key}: {wrap_text_to_80_chars(value)}", 2))
+        if not d:
+            print()
+            continue
+        fields="\n".join([f"{k}:{v}" for k,v in d.items()])
+        FIELDS = "  Fields"
+        initial_indent = 25 - len(FIELDS)
+        print(f"{FIELDS}{wrap_text_to_80_chars(fields, initial_indent, subsequent_indent)}")
         print()
