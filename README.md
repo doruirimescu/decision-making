@@ -62,12 +62,16 @@ A selection of use cases to demonstrate the desired capabilities of the final pr
 * Scrum Product Owner (feature prioritization)
 
 ---
-### Pricing model
-| Account type | Models | Parameters | Datasets/model | Datapoints/dataset | Access to  model library |
-|--------------|--------|------------|----------------|--------------------|--------------------------|
-| **Free**         | 1      | 5          | 1              | 10                 | :x:                      |
-| **Basic**        | 5      | 10         | 5              | 20                 | :x:                      |
-| **Full**         | 10     | 100        | 10             | 1000               | :heavy_check_mark:       |
+### The business model
+Python backend + (tbd) frontend -> web-based solution. Thus, the business model is software-as-a-service, combined with fee-for-service (in future).
+The user creates an online account, selecting one of the account types from below:
+
+
+| Account type | Models | Parameters | Datasets/model | Datapoints/dataset | Access to  model library | Access to AI-based data analysis tools | Expires in |
+|--------------|--------|------------|----------------|--------------------|--------------------------|----------------------------------------|------------|
+| Free         | 1      | 5          | 1              | 10                 | :x:                      | :x:                                    | 30 days    |
+| Basic        | 5      | 10         | 5              | 20                 | :x:                      | :x:                                    | 1 year     |
+| Full         | 10     | 100        | 10             | 1000               | :heavy_check_mark:       | :heavy_check_mark:                     | 1 year     |
 
 ---
 
