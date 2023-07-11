@@ -2,6 +2,7 @@ from typing import List, Tuple
 from colorama import Fore, Style
 import normalization.normalization as normalization
 import parameter
+from helpers import indent_n_chars, wrap_text_to_80_chars
 
 def introduction():
     print(f"{Fore.GREEN}")
@@ -165,3 +166,18 @@ def get_parameter_weights(parameters: List):
 
     for i, p in enumerate(parameters):
         print(f"{i}: parameter: {p.name} weight: {p.weight}")
+
+
+def list_parameters():
+    for subclass in parameter.Parameter.__subclasses__():
+        print(f"{subclass.__name__}")
+        print()
+        print(indent_n_chars("Description:", 2))
+
+        print(f"{indent_n_chars(wrap_text_to_80_chars(subclass.get_description()), 2)}")
+        print()
+        print(indent_n_chars("Fields:", 2))
+        d = subclass.get_fields_and_their_description()
+        for key, value in d.items():
+            print(indent_n_chars(f"{key}: {wrap_text_to_80_chars(value)}", 2))
+        print()

@@ -49,7 +49,7 @@ class Parameter(BaseModel):
         self.score = self.normalizer(self.value)
 
     @classmethod
-    def get_subclasses_as_list(cls):
+    def get_subclasses_as_list(cls) -> List[str]:
         return [subclass.__name__ for subclass in cls.__subclasses__()]
 
     @classmethod
@@ -64,7 +64,7 @@ class Parameter(BaseModel):
 
     @classmethod
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return None
+        return cls.get_default_fields_and_their_description()
 
 
 class NumericalParameter(Parameter):
@@ -95,7 +95,7 @@ class NumericalParameter(Parameter):
     @classmethod
     def get_description(cls) -> str:
         return (
-            f"{cls.__name__} represents parameters that have numeric values. \n"
+            f"{cls.__name__} represents parameters that have numeric values. "
             "Examples could be values related to costs, quantities, ratings, or scores."
         )
 
@@ -103,7 +103,7 @@ class NumericalParameter(Parameter):
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         d = cls.get_default_fields_and_their_description()
         d.update({
-            "value_range": "The range of values (min, max) that the parameter's \n\t\t "
+            "value_range": "The range of values (min, max) that the parameter's "
             "value can take. (e.g. (0, 100) for a price parameter)."
             })
         return d
@@ -119,9 +119,14 @@ class BooleanParameter(Parameter):
     @classmethod
     def get_description(cls) -> str:
         return (
-            f"{cls.__name__} represents parameters that have binary values, typically true or false. \n"
+            f"{cls.__name__} represents parameters that have binary values, typically true or false. "
             "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
         )
+
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        d = cls.get_default_fields_and_their_description()
+        return d
 
 
 class EnumParameter(Parameter):
@@ -135,8 +140,8 @@ class EnumParameter(Parameter):
     @classmethod
     def get_description(cls) -> str:
         return (
-            f"{cls.__name__} represents parameters that have a set of predefined labels or categories. \n"
-            "Users can choose from a list of options to assign a value to the parameter. \n"
+            f"{cls.__name__} represents parameters that have a set of predefined labels or categories. "
+            "Users can choose from a list of options to assign a value to the parameter. "
             "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
         )
 
@@ -144,7 +149,7 @@ class EnumParameter(Parameter):
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         d = cls.get_default_fields_and_their_description()
         d.update({
-            "labels": "Dictionary of labels and their corresponding values. \n\t\t "
+            "labels": "Dictionary of labels and their corresponding values. "
             "value should be between 0-100 and map directly to a score."
             })
         return d
