@@ -69,15 +69,16 @@ List (describe) all normalizers: `./cli.py normalizers --list`
 
 TODO:
 - [ ] Draw normalizer example
+- [ ] Fully automated add-param for scripting
 
 ### Dataset building
-- [ ] Add dataset to model
-- [ ] List model datasets
-- [ ] Rename model dataset
-- [ ] Add new dataset to model
+TODO:
+- [ ] Add dataset to model ./cli.py model --name <name> --dataset-add <name>`
+- [ ] List model datasets ./cli.py model --name <name> --dataset-list`
+- [ ] Rename model dataset ./cli.py model --name <name> --dataset-rename <name>`
 
 ### GUI
-
+TODO
 
 ---
 ## Use cases
