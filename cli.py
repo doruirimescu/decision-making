@@ -3,7 +3,7 @@ import argparse
 import normalization.normalization as normalization
 import parameter
 import user_interaction
-
+from typing import Tuple
 parser = argparse.ArgumentParser(description='Decision making cli.')
 
 parser.add_argument('--version', action='version', version='%(prog)s 1.0')
@@ -28,6 +28,7 @@ model_parser.add_argument('--describe', action='store_true', help='Describe sele
 model_parser.add_argument('--rename', action='store_true', help='Change selected model name')
 model_parser.add_argument('--delete-param', type=str, help='Delete selected model parameters')
 model_parser.add_argument('--add-param', action='store_true', help='Add a new parameter to the selected model')
+model_parser.add_argument('--weight-param', nargs='+', help='Change parameter weight <parameter> <weight>')
 
 model_parser.add_argument('--create', action='store_true', help='Create model')
 model_parser.add_argument('--delete', action='store_true', help='Delete model')
@@ -67,6 +68,9 @@ elif args.command == 'model':
             user_interaction.delete_model_param(selected_model, param_to_delete)
         elif args.add_param:
             user_interaction.add_model_param(selected_model)
+        elif args.weight_param:
+            param_name, param_weight = args.weight_param
+            user_interaction.change_model_parameter_weight(selected_model, param_name, param_weight)
         elif args.delete:
             user_interaction.delete_model(selected_model)
         elif args.add_dataset:

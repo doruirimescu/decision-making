@@ -57,6 +57,9 @@ class Model(Storable):
                     score = parameter.evaluate_score(parameter_value.value)
                     parameter_value = ParameterData(parameter_value.name, parameter_value.value, score)
 
+                datapoint.total_score = sum(
+                    [p.score * self.parameters_by_name[p.name].weight for p in datapoint.parameter_datas]
+                    )
             dataset.store_json()
 
     def reorder_parameters(self, new_order: List[int]) -> None:
@@ -64,6 +67,10 @@ class Model(Storable):
 
     def delete_parameter(self, parameter_name: str) -> None:
         self.parameters = [p for p in self.parameters if p.name != parameter_name]
+
+    def change_parameter_weight(self, parameter_name: str, new_weight: float) -> None:
+        parameter = self.parameters_by_name[parameter_name]
+        parameter.weight = new_weight
 
     def add_parameter(self, parameter: Parameter) -> None:
         self.parameters.append(parameter)

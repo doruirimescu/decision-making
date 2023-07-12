@@ -4,7 +4,6 @@ import shutil
 import dataset
 import copy
 
-
 class TestDataset(unittest.TestCase):
     def test_datapoint(self):
         dp = dataset.DataPoint(

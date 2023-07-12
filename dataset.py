@@ -10,6 +10,7 @@ ParameterData = namedtuple("ParameterData", ["name", "value", "score"])
 class DataPoint(BaseModel):
     name: Optional[str] = None
     parameter_datas: Optional[List[ParameterData]] = None
+    total_score: Optional[float] = None
 
 
 class Dataset(Storable):

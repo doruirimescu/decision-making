@@ -277,6 +277,11 @@ def edit_model_name(model_name: str) -> None:
     Model.delete_binary(model_name)
     print(f"The model {model_name} has been renamed to {new_name}.")
 
+def change_model_parameter_weight(model_name: str, param_name: str, new_weight: float) -> None:
+    model = Model.load_binary(model_name)
+    model.change_parameter_weight(param_name, float(new_weight))
+    model.store_binary()
+    print(f"The weight of {param_name} has been changed to {new_weight}.")
 
 def delete_model_param(model_name: str, param_name: str) -> None:
     model = Model.load_binary(model_name)
