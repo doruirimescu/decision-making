@@ -60,3 +60,20 @@ print(td.order_by_parameter_value('year'))
 
 print()
 print(td.order_by_parameter_value('total_score'))
+
+dataframe = td.order_by_parameter_value('total_score')
+dataframe.to_json('examples/example.json', indent=4, index=True)
+
+print()
+# load dataframe from json
+import pandas as pd
+df = pd.read_json('examples/example.json')
+
+
+# df to dict of dicts
+dict_of_dicts = df.to_dict(orient='index')
+
+dataset_from_df = Dataset(name='dataset_from_df', description='dataset_from_df')
+dataset_from_df.from_dataframe(df)
+
+print(all(dataset_from_df.dataframe() == td.dataframe()))

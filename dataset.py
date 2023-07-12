@@ -38,6 +38,19 @@ class Dataset(Storable):
             return df(data, columns=param_names, index=names)
         return df({})
 
+    def from_dataframe(self, dataframe: df) -> None:
+        dict_of_dicts = dataframe.to_dict(orient='index')
+        for name in dict_of_dicts.keys():
+            data = dict_of_dicts[name]
+            total_score = data['total_score']
+            data.pop('total_score')
+            parameter_dats = []
+            for k,v in data.items():
+                parameter_dats.append(ParameterData(name=k, value=v[0], score=v[1]))
+            self.add_data_point(
+                DataPoint(name=name, parameter_datas=parameter_dats, total_score=total_score)
+            )
+
     def order_by_parameter_value(self, parameter_name: str, ascending: bool = True) -> df:
         dataframe = self.dataframe()
         dataframe.sort_values(by=[parameter_name][0], inplace=True, ascending=ascending)

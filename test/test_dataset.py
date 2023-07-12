@@ -15,6 +15,7 @@ class TestDataset(unittest.TestCase):
                 dataset.ParameterData(name="color", value="Honeyburst", score=0),
                 dataset.ParameterData(name="condition", value="As new", score=0),
             ],
+            total_score=0,
         )
 
         telecaster = dataset.DataPoint(
@@ -25,6 +26,7 @@ class TestDataset(unittest.TestCase):
                 dataset.ParameterData(name="color", value="Honeyburst", score=0),
                 dataset.ParameterData(name="condition", value="As new", score=0),
             ],
+            total_score=0,
         )
 
         ds = dataset.Dataset(
@@ -42,6 +44,7 @@ class TestDataset(unittest.TestCase):
                 dataset.ParameterData(name="year", value=1950, score=0),
                 dataset.ParameterData(name="color", value="RED", score=0),
             ],
+            total_score=0,
         )
         self.assertEqual(len(dp.parameter_datas), 3)
 
@@ -53,6 +56,7 @@ class TestDataset(unittest.TestCase):
                 dataset.ParameterData(name="year", value=1950, score=0),
                 dataset.ParameterData(name="color", value="RED", score=0),
             ],
+            total_score=0,
         )
 
         ds = dataset.Dataset(
@@ -84,10 +88,16 @@ class TestDataset(unittest.TestCase):
     def test_dataset_to_df(self):
         ds = self.create_test_dataset()
         df = ds.dataframe()
-        self.assertEqual(df.shape, (8, 3))
-        self.assertEqual(df["name"].unique().tolist(), ["price", "year", "color", "condition"])
-        print(df)
-        self.assertTrue(False)
+        self.assertEqual(df.shape, (2, 5))
+        self.assertEqual(list(df), ["price", "year", "color", "condition", "total_score"])
+
+    def test_dataset_to_df_and_from(self):
+        ds = self.create_test_dataset()
+        df = ds.dataframe()
+
+        ds2 = dataset.Dataset(name="TestDataset2", description="TestDataset2 description")
+        ds2.from_dataframe(df)
+        self.assertTrue(all(ds.dataframe() == ds2.dataframe()))
 
     # after all tests
     @classmethod
