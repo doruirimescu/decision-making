@@ -7,6 +7,10 @@
 * Parts: model building, data building, data analysis
 
 ### Workflow:
+0. Workspace preparation, for data storage
+    1. Create folder `decision-making/data`
+    2. Create folder `decision-making/data/dataset`
+    3. Create folder `decision-making/data/model`
 1.  Model building:
     1. Name the model
     2. Add parameters: select type, name, additional arguments (such as value range), normalizer
