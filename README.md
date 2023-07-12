@@ -8,7 +8,7 @@
 
 ### Workflow:
 1. Model building: Name the model, add parameters, add weights, create/link datasets, store the model
-2. Data building: Gather data, add datapoints to the dataset corresponding to the selected model
+2. Data building: Gather data, add data points to the dataset corresponding to the selected model, evaluate the model
 3. Data analysis: Filter data, remove outliers, rank, plot, chart
 
 ### Glossary:
@@ -22,8 +22,8 @@ a positive linear step, which maps, for instance, all years before 1960 to zero,
 to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 * **Score:** A parameter's value, normalized in the interval of 0-100
 * **Dataset:** A set of data points that belong to a model
-* **Data point:** One value for each parameter of the model. The decision candidate. This represents, for example, one apartment, one interview candidate, etc.
-
+* **Data point:** One ParameterValue for each parameter of the model. The decision candidate. This represents, for example, one apartment, one interview candidate, etc.
+* **ParameterValue** The name, numerical value and score stored in the dataset, that correspond to a model parameter 
 ---
 ## Model building
 * The model describes the setup for the decision making problem
@@ -50,7 +50,7 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 # User interface
 ## CMD
 
-### Model building
+### Available commands
 Create a model: `./cli.py model --create`
 
 Delete a model: `./cli.py model --name <name> --delete`
@@ -73,15 +73,16 @@ List datasets of model `./cli.py model --name <name> --list-datasets`
 
 Delete dataset from model `./cli.py model --name <name> --delete-dataset`
 
-TODO:
+Evaluate datasets of model `cli.py model --name <name> --evaluate-dataset`
+
+### Model building TODO
 - [ ] Add tests
 - [ ] Parameters should be storable just like datasets
 - [ ] Draw normalizer example
 - [ ] Fully automated add-param for scripting
 
 
-### Dataset building
-TODO:
+### Data building TODO
 - [ ] Add datapoint to dataset `./cli.py dataset --name <name> --datapoint-add <name>`
 - [ ] Rename datapoint of dataset `./cli.py dataset --name <name> --datapoint-rename <name>`
 
