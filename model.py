@@ -1,6 +1,6 @@
 from typing import ClassVar, List, Optional
 
-from dataset import Dataset, ParameterValue
+from dataset import Dataset, ParameterData
 from parameter import Parameter
 from storable import Storable
 
@@ -31,13 +31,13 @@ class Model(Storable):
         for dataset in self.datasets:
             for datapoint in dataset.data_points:
                 # 1. The length of all datapoint parameter values must be equal to the number of parameters
-                if len(datapoint.parameter_values) != len(self.parameters):
+                if len(datapoint.parameter_datas) != len(self.parameters):
                     raise ValueError(
                         f"Number of datapoints in {dataset.name} does not match number of parameters"
                         )
 
                 # 2. The name of each datapoint.point must be equal to the name of the parameter
-                names_of_datapoint_parameters = [p.name for p in datapoint.parameter_values]
+                names_of_datapoint_parameters = [p.name for p in datapoint.parameter_datas]
                 for name in names_of_datapoint_parameters:
                     if name not in self.parameters_by_name:
                         raise ValueError(
@@ -45,7 +45,7 @@ class Model(Storable):
                             )
 
                 # 3. The values must be validated by the parameter
-                for parameter_value in datapoint.parameter_values:
+                for parameter_value in datapoint.parameter_datas:
                     parameter = self.parameters_by_name[parameter_value.name]
                     if not parameter.is_value_valid(parameter_value.value):
                         raise ValueError(
@@ -53,7 +53,7 @@ class Model(Storable):
                             f" {parameter_value.name} of dataset {dataset.name}"
                             )
                     score = parameter.evaluate_score(parameter_value.value)
-                    parameter_value = ParameterValue(parameter_value.name, parameter_value.value, score)
+                    parameter_value = ParameterData(parameter_value.name, parameter_value.value, score)
 
             dataset.store_json()
 

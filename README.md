@@ -15,7 +15,7 @@
 * **Model:** Defines the object of decision making (apartment, interview candidate, etc)
 * **Parameter:** Describes the object of decision making (cost, color, year). Each parameter describes a value
 and computes a score (0-100). The score represents the parameter's normalized value. Note: the numerical values are
-stored in ParameterValues which are stored in DataPoints 
+stored in ParameterValues which are stored in DataPoints
 * **Normalizer:** A function that transforms a parameter value into a score. Ex. an apartment buyer
 could consider only apartments built after the 1960s. The simplest normalizer would be a step,
 which scores all years before 1960 to 0, and all years after 1960 to 100. A more complex one could be
@@ -23,8 +23,8 @@ a positive linear step, which maps, for instance, all years before 1960 to zero,
 to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 * **Score:** A parameter's value, normalized in the interval of 0-100
 * **Dataset:** A set of data points that belong to a model
-* **Data point:** One ParameterValue for each parameter of the model. The decision candidate. This represents, for example, one apartment, one interview candidate, etc.
-* **ParameterValue** The name, numerical value and score stored in the dataset, that correspond to a model parameter 
+* **Data point:** One ParameterData for each parameter of the model. The decision candidate. This represents, for example, one apartment, one interview candidate, etc.
+* **ParameterData** The name, numerical value and score stored in the dataset, that correspond to a model parameter
 ---
 ## Model building
 * The model describes the setup for the decision making problem
