@@ -16,7 +16,6 @@ class Dataset(Storable):
     description: Optional[str] = None
     data_points: Optional[List[DataPoint]] = None
     storage_folder: ClassVar[str] = "data/dataset/"
-    n_parameters: int = 0
 
     def add_data_point(self, data_point: DataPoint) -> None:
         if self.data_points is None:
