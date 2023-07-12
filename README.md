@@ -7,13 +7,26 @@
 * Parts: model building, data building, data analysis
 
 ### Workflow:
-1. Model building: Name the model, add parameters, add weights, create/link datasets, store the model
-2. Data building: Gather data, add data points to the dataset corresponding to the selected model, evaluate the model
-3. Data analysis: Filter data, remove outliers, rank, plot, chart
+1.  Model building:
+    1. Name the model
+    2. Add parameters: select type, name, additional arguments (such as value range), normalizer
+    3. Optionally, add weights to the parameters
+    4. Optionally, create or link existing datasets to the model
+    5. Store the model
+2. Data building:
+    1. Gather data
+    2. Add data points to datasets
+    3. Evaluate (and validate) the model
+3. Data analysis:
+    1. Filter data
+    2. Sort data
+    3. Plot data
+    4. Chart data
+    5. Remove outliers
 
 ### Glossary:
-* **Model:** Defines the object of decision making (apartment, interview candidate, etc)
-* **Parameter:** Describes the object of decision making (cost, color, year). Each parameter describes a value
+* **Model:** Defines the object of decision-making (apartment, interview candidate, etc)
+* **Parameter:** Describes the object of decision-making (cost, color, year). Each parameter describes a value
 and computes a score (0-100). The score represents the parameter's normalized value. Note: the numerical values are
 stored in ParameterDatas which are stored in DataPoints. Parameters only description and computation.
 * **Normalizer:** A function that transforms a parameter value into a score. Ex. an apartment buyer
@@ -27,7 +40,7 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 * **ParameterData** The name, numerical value and score stored in the dataset, that correspond to a model parameter
 ---
 ## Model building
-* The model describes the setup for the decision making problem
+* The model describes the setup for the decision-making problem
 * The model consists of several parameters that aid in decision making
 * The model is created by the user
 * The model is stored in a binary file
