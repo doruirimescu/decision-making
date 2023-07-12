@@ -1,4 +1,4 @@
-from typing import ClassVar, List, Optional
+from typing import ClassVar, List, Optional, Dict
 
 from dataset import Dataset, ParameterData
 from parameter import Parameter
@@ -7,16 +7,18 @@ from storable import Storable
 
 class Model(Storable):
     parameters: List[Parameter]
-    parameters_by_name: Optional[dict[str, Parameter]]
+    parameters_by_name: Optional[Dict[str, Parameter]]
     datasets: Optional[List[Dataset]]
     storage_folder: ClassVar[str] = "data/model/"
 
     def __init__(self, **data):
+        # Update datasets from json
         datasets = data.get("datasets")
         if datasets:
             for i, dataset in enumerate(datasets):
                 datasets[i] = Dataset(**Dataset.load_json(dataset.name))
         data["datasets"] = datasets
+
         parameters_by_name = dict()
         for parameter in data.get("parameters"):
             parameters_by_name[parameter.name] = parameter

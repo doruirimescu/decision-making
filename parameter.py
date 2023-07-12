@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, ClassVar
+from storable import Storable
 
 from pydantic import BaseModel
 
@@ -27,11 +28,12 @@ f"ARRAY represents parameters that store a list of values. \n"
 "or to capture multiple values for a single parameter."
 
 
-class Parameter(BaseModel):
+class Parameter(Storable):
     name: str
     weight: float = 1.0
     # How to use object instead of storing type and class separately
     normalizer: normalization.Normalizer = normalization.Identity()
+    storage_folder: ClassVar[str] = "data/parameter/"
 
     def evaluate_score(self, value: Any) -> float:
         return self.normalizer(value)
