@@ -42,6 +42,9 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 * **Dataset:** A set of data points that belong to a model
 * **Data point:** One ParameterData for each parameter of the model. The decision candidate. This represents, for example, one apartment, one interview candidate, etc.
 * **ParameterData** The name, numerical value and score stored in the dataset, that correspond to a model parameter
+
+**TODO**: rename Normalizer into Scoring / Scorer / ScoreFunction / ScoringFunction. It is a more intuitive metaphor
+
 ---
 ## Model building
 * The model describes the setup for the decision-making problem
