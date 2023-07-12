@@ -45,7 +45,7 @@ class Dataset(Storable):
             total_score = data['total_score']
             data.pop('total_score')
             parameter_dats = []
-            for k,v in data.items():
+            for k, v in data.items():
                 parameter_dats.append(ParameterData(name=k, value=v[0], score=v[1]))
             self.add_data_point(
                 DataPoint(name=name, parameter_datas=parameter_dats, total_score=total_score)
@@ -58,7 +58,7 @@ class Dataset(Storable):
 
     def order_by_parameter_score(self, parameter_name: str, ascending: bool = True) -> df:
         dataframe = self.dataframe()
-        dataframe.sort_values(by=['price'], inplace=True, ascending=ascending, key=lambda x: x[1])
+        dataframe.sort_values(by=[parameter_name], inplace=True, ascending=ascending, key=lambda x: x[1])
         return dataframe
 
 # We should also have a method to convert this to a pandas dataframe
