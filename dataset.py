@@ -4,18 +4,19 @@ from pydantic import BaseModel
 from storable import Storable
 
 
-Point = namedtuple("Point", ["name", "value", "score"])
+ParameterValue = namedtuple("ParameterValue", ["name", "value", "score"])
 
 
 class DataPoint(BaseModel):
     name: Optional[str] = None
-    point: Optional[Point] = None
+    parameter_values: Optional[List[ParameterValue]] = None
 
 
 class Dataset(Storable):
     description: Optional[str] = None
     data_points: Optional[List[DataPoint]] = None
     storage_folder: ClassVar[str] = "data/dataset/"
+    n_parameters: int = 0
 
     def add_data_point(self, data_point: DataPoint) -> None:
         if self.data_points is None:

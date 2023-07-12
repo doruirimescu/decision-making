@@ -262,6 +262,8 @@ def describe_model(model_name: str) -> None:
     for d in model.datasets:
         print(f"  {d.__repr__()}")
 
+    print(model.parameters_by_name)
+
 
 def delete_model(model_name: str) -> None:
     Model.delete_binary(model_name)
@@ -299,6 +301,12 @@ def list_model_datasets(model_name: str) -> None:
             print(f"{d.__repr__()}")
     else:
         print(f"There are no datasets for {model_name}.")
+
+
+def evaluate_model_datasets(model_name: str) -> None:
+    model = Model.load_binary(model_name)
+    model.evaluate_datasets()
+    model.store_binary()
 
 
 def add_model_dataset(model_name: str) -> None:

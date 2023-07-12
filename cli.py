@@ -35,6 +35,7 @@ model_parser.add_argument('--delete', action='store_true', help='Delete model')
 model_parser.add_argument('--add-dataset', action='store_true', help='Add dataset to model')
 model_parser.add_argument('--list-datasets', action='store_true', help='List datasets in model')
 model_parser.add_argument('--delete-dataset', type=str, help='Add dataset to model')
+model_parser.add_argument('--evaluate-datasets', action='store_true', help='Evaluate datasets in model')
 
 # Create parser for "dataset" command
 dataset_parser = subparsers.add_parser('dataset', help='Dataset related commands')
@@ -74,6 +75,8 @@ elif args.command == 'model':
             user_interaction.list_model_datasets(selected_model)
         elif args.delete_dataset:
             user_interaction.delete_model_dataset(selected_model, args.delete_dataset)
+        elif args.evaluate_datasets:
+            user_interaction.evaluate_model_datasets(selected_model)
 
 elif args.command == 'dataset':
     if args.name:
