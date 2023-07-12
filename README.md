@@ -85,6 +85,8 @@ Delete a model parameter: `./cli.py model --name <name> --delete-param <param_na
 
 Add a model parameter: `./cli.py model --name <name> --add-param`
 
+Modify parameter weight: `./cli.py model --name <name> --weight-param <param_name> <new_weight>`
+
 List (describe) all parameters: `./cli.py parameters --list`
 
 List (describe) all normalizers: `./cli.py normalizers --list`
