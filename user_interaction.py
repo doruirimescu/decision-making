@@ -58,7 +58,7 @@ def create_parameter():
     selected_parameter_values = {}
     if additional_parameters is not None:
         for k in additional_parameters.keys():
-            answer = input(f"Please enter the value for {k}: ")
+            answer = input(f"Please enter the {k}: ")
             if answer == "":
                 answer = None
             else:
