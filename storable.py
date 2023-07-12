@@ -19,7 +19,7 @@ class Storable(BaseModel):
 
     def store_json(self) -> None:
         with open(self.get_path() + ".json", 'w') as f:
-            json.dump(self.model_dump(), f)
+            json.dump(self.model_dump(), f, indent=4)
 
     @classmethod
     def load_binary(cls, model_name: str):

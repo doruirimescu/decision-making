@@ -1,6 +1,6 @@
 from typing import ClassVar, List, Optional
 
-from dataset import Dataset, DataPoint
+from dataset import Dataset, ParameterValue
 from parameter import Parameter
 from storable import Storable
 
@@ -52,6 +52,10 @@ class Model(Storable):
                             f"Value {parameter_value.value} is not valid for parameter"
                             f" {parameter_value.name} of dataset {dataset.name}"
                             )
+                    score = parameter.evaluate_score(parameter_value.value)
+                    parameter_value = ParameterValue(parameter_value.name, parameter_value.value, score)
+
+            dataset.store_json()
 
     def reorder_parameters(self, new_order: List[int]) -> None:
         self.parameters = [self.parameters[i] for i in new_order]
