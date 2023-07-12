@@ -30,7 +30,8 @@ to 2000 to the interval 0-100, and all years after 2000 to a score of 100
 * The model describes the setup for the decision making problem
 * The model consists of several parameters that aid in decision making
 * The model is created by the user
-* The model is stored in a json file
+* The model is stored in a binary file
+* The datasets of the model are stored in json files
 
 ### TODO
 - [ ] Model can be based on SWOT
