@@ -40,13 +40,18 @@ class Model(Storable):
                 names_of_datapoint_parameters = [p.name for p in datapoint.parameter_values]
                 for name in names_of_datapoint_parameters:
                     if name not in self.parameters_by_name:
-                        raise ValueError(f"Parameter {name} not found in model")
+                        raise ValueError(
+                            f"Parameter {name} of dataset {dataset.name} not found in model"
+                            )
 
                 # 3. The values must be validated by the parameter
                 for parameter_value in datapoint.parameter_values:
                     parameter = self.parameters_by_name[parameter_value.name]
                     if not parameter.is_value_valid(parameter_value.value):
-                        raise ValueError(f"Value {parameter_value.value} is not valid for parameter {parameter_value.name}")
+                        raise ValueError(
+                            f"Value {parameter_value.value} is not valid for parameter"
+                            f" {parameter_value.name} of dataset {dataset.name}"
+                            )
 
     def reorder_parameters(self, new_order: List[int]) -> None:
         self.parameters = [self.parameters[i] for i in new_order]

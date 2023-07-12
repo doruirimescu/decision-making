@@ -79,15 +79,17 @@ class NumericalParameter(Parameter):
     def is_value_valid(self, value: Any) -> bool:
         if self.value_range is not None:
             if value < self.value_range[0]:
-                raise ValueError(
+                print(
                     f"Value cannot be below {self.value_range[0]}, "
                     f"the minimum value of the range."
                 )
+                return False
             elif value > self.value_range[1]:
-                raise ValueError(
+                print (
                     f"Value cannot be above {self.value_range[1]}, "
                     f"the maximum value of the range."
                 )
+                return False
         return True
 
     @classmethod
