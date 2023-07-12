@@ -2,7 +2,7 @@ import json
 import os
 import pickle
 from typing import ClassVar
-
+import pathlib
 from pydantic import BaseModel
 
 
@@ -14,11 +14,13 @@ class Storable(BaseModel):
         return self.storage_folder + self.name
 
     def store_binary(self) -> None:
-        with open(self.get_path() + ".bin", 'wb') as f:
+        pathlib.Path(self.get_path()).parent.mkdir(parents=True, exist_ok=True)
+        with open(self.get_path() + ".bin", 'wb+') as f:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     def store_json(self) -> None:
-        with open(self.get_path() + ".json", 'w') as f:
+        pathlib.Path(self.get_path()).parent.mkdir(parents=True, exist_ok=True)
+        with open(self.get_path() + ".json", 'w+') as f:
             json.dump(self.model_dump(), f, indent=4)
 
     @classmethod
