@@ -22,21 +22,21 @@ class Storable(BaseModel):
             json.dump(self.model_dump(), f, indent=4)
 
     @classmethod
-    def load_binary(cls, model_name: str):
-        with open(f"{cls.storage_folder}/{model_name}.bin", 'rb') as f:
+    def load_binary(cls, name: str):
+        with open(f"{cls.storage_folder}/{name}.bin", 'rb') as f:
             m = pickle.load(f)
             m.__init__(**m.__dict__)
             return m
 
     @classmethod
-    def load_json(cls, model_name: str):
-        with open(f"{cls.storage_folder}/{model_name}.json", 'r') as f:
+    def load_json(cls, name: str):
+        with open(f"{cls.storage_folder}/{name}.json", 'r') as f:
             return json.load(f)
 
     @classmethod
-    def delete_binary(cls, model_name: str) -> None:
-        os.remove(f"{cls.storage_folder}//{model_name}.bin")
+    def delete_binary(cls, name: str) -> None:
+        os.remove(f"{cls.storage_folder}//{name}.bin")
 
     @classmethod
-    def delete_json(cls, model_name: str) -> None:
-        os.remove(f"{cls.storage_folder}//{model_name}.json")
+    def delete_json(cls, name: str) -> None:
+        os.remove(f"{cls.storage_folder}//{name}.json")
