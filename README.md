@@ -75,7 +75,7 @@ List datasets of model `./cli.py model --name <name> --list-datasets`
 
 Delete dataset from model `./cli.py model --name <name> --delete-dataset`
 
-Evaluate datasets of model `cli.py model --name <name> --evaluate-dataset`
+Evaluate datasets of model `./cli.py model --name <name> --evaluate-dataset`
 
 ### Model building TODO
 - [ ] Add tests
