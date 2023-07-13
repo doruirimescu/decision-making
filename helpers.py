@@ -1,5 +1,5 @@
 import textwrap
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 
 def wrap_text_to_80_chars(text: str, initial_indent=0, subsequent_indent=0) -> str:

@@ -1,8 +1,9 @@
-import unittest
+import copy
 import os
 import shutil
+import unittest
+
 import dataset
-import copy
 
 
 class TestDataset(unittest.TestCase):

@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, ClassVar
-from storable import Storable
+from typing import Any, ClassVar, Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
 import normalization.normalization as normalization
+from storable import Storable
 
 f"TEXT represents parameters that accept free-form text input. \n"
 "Text parameters can capture qualitative information, user comments, or subjective evaluations."

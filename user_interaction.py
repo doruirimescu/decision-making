@@ -6,10 +6,9 @@ from colorama import Fore, Style
 import dataset
 import normalization.normalization as normalization
 import parameter
-from helpers import indent_n_chars, wrap_text_to_80_chars, get_class_fields_and_their_description
+from helpers import (get_class_fields_and_their_description, indent_n_chars,
+                     wrap_text_to_80_chars)
 from model import Model
-from ast import literal_eval
-
 
 # Constants for debugging
 MODIFY_NORMALIZER = True

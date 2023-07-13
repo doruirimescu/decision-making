@@ -1,8 +1,9 @@
 import json
 import os
+import pathlib
 import pickle
 from typing import ClassVar
-import pathlib
+
 from pydantic import BaseModel
 
 

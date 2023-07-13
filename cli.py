@@ -1,10 +1,11 @@
 #!/usr/bin/env python3.10
 import argparse
+from typing import Tuple
 
 import normalization.normalization as normalization
 import parameter
 import user_interaction
-from typing import Tuple
+
 parser = argparse.ArgumentParser(description='Decision making cli.')
 
 parser.add_argument('--version', action='version', version='%(prog)s 1.0')

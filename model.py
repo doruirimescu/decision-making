@@ -1,4 +1,4 @@
-from typing import ClassVar, List, Optional, Dict
+from typing import ClassVar, Dict, List, Optional
 
 from dataset import Dataset, ParameterData
 from parameter import Parameter

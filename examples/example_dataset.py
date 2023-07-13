@@ -1,11 +1,12 @@
-import sys
 import os
 import pathlib
+import sys
+
 current_path = os.path.dirname(os.path.abspath(__file__))
 current_path = pathlib.Path(current_path).parent.absolute()
 sys.path.append(str(current_path))
 
-from dataset import Dataset, DataPoint, ParameterData
+from dataset import DataPoint, Dataset, ParameterData
 
 
 def create_test_dataset():
@@ -67,6 +68,7 @@ dataframe.to_json('examples/example.json', indent=4, index=True)
 print()
 # load dataframe from json
 import pandas as pd
+
 df = pd.read_json('examples/example.json')
 
 

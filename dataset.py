@@ -1,9 +1,10 @@
-from typing import ClassVar, List, Optional, Tuple, Any
 from collections import namedtuple
-from pydantic import BaseModel
-from storable import Storable
-from pandas import DataFrame as df
+from typing import Any, ClassVar, List, Optional, Tuple
 
+from pandas import DataFrame as df
+from pydantic import BaseModel
+
+from storable import Storable
 
 ParameterData = namedtuple("ParameterData", ["name", "value", "score"])
 
