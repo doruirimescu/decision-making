@@ -64,9 +64,6 @@ class Model(Storable):
                     ) / weight_sums
             dataset.store_json()
 
-    def reorder_parameters(self, new_order: List[int]) -> None:
-        self.parameters = [self.parameters[i] for i in new_order]
-
     def delete_parameter(self, parameter_name: str) -> None:
         self.parameters = [p for p in self.parameters if p.name != parameter_name]
 
