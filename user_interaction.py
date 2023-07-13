@@ -1,5 +1,5 @@
 from ast import literal_eval
-from typing import List
+from typing import List, Optional, Tuple
 
 from colorama import Fore, Style
 
@@ -39,7 +39,7 @@ def create_parameter():
     while len(n) > 1:
         n = input(
             f"\nPlease enter the desired parameter number. \n"
-            "If a description is needed, follow it by a zero:"
+            "If a description is needed, follow it by a zero, eg. 1 0:"
             ).split(" ")
         selected_parameter_name = parameter.Parameter.get_subclasses_as_list()[int(n[0])]
         if len(n) > 1:
@@ -73,11 +73,11 @@ def create_parameter():
         "normalizer", p.normalizer.get_type()
         ):
         print()
-        p.normalizer = create_normalizer()
+        p.normalizer = create_normalizer(p.__getattribute__("value_range"), p.name)
     return p
 
 
-def create_normalizer():
+def create_normalizer(value_range: Optional[Tuple[int,int]], parameter_name: str):
     print()
     print("Choose a normalizer. The options are:")
     for i, n in enumerate(normalization.Normalizer.get_subclasses_as_list()):
@@ -86,7 +86,7 @@ def create_normalizer():
     while len(n) > 1:
         n = input(
             f"\nPlease enter the desired normalizer number. \n"
-            "If a description is needed, follow it by a zero:"
+            "If a description is needed, follow it by a zero, eg. 1 0:"
             ).split(" ")
         selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
         if len(n) > 1:
@@ -105,10 +105,12 @@ def create_normalizer():
     selected_parameter_values = {}
     if additional_parameters is not None:
         for k in additional_parameters.keys():
-            selected_parameter_values[k] = input(f"Please enter the value for {k}: ")
+            from ast import literal_eval
+            selected_parameter_values[k] = literal_eval(input(f"Please enter the value for {k}: "))
 
     normalizer = eval(f"normalization.{selected_normalizer_name}(**{selected_parameter_values})")
     print(f"You created: {selected_normalizer_name}({selected_parameter_values})")
+    normalizer.plot_example(value_range, parameter_name)
     print()
     return normalizer
 

@@ -8,18 +8,33 @@ import numpy as np
 from pydantic import BaseModel
 
 
+def clip_to(value: float, clip_range: Optional[Tuple[int, int]] = None) -> float:
+    if not clip_range:
+        return value
+    clip_low, clip_high = clip_range
+    if value < clip_low:
+        return clip_low
+    elif value > clip_high:
+        return clip_high
+    else:
+        return value
+
+
 class Normalizer(ABC, BaseModel):
     """
     A class that represents a normalizer. A normalizer is a function that takes a value and returns a normalized value,
     i.e. a value between 0 and 100.
     """
+
     description: str = "Normalizer description"
 
     @abstractmethod
     def __call__(self, *args, **kwargs) -> float:
         pass
 
-    def plot_example(self):
+    def plot_example(
+        self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
+    ):
         pass
 
     @classmethod
@@ -46,13 +61,23 @@ class Identity(Normalizer):
     def __call__(self, x: float) -> float:
         return x
 
-    def plot_example(self):
-        x = [random.randint(0, 100) for _ in range(15)]
+    def plot_example(
+        self,
+        clip_range: Optional[Tuple[float, float]] = None,
+        horizontal: str = "Value",
+    ):
+
+        if clip_range is not None:
+            n_steps = 100
+            x = np.linspace(clip_range[0], clip_range[1], n_steps)
+        else:
+            x = np.linspace(-100, 100, 100)
+
         y = [self.__call__(i) for i in x]
         plt.scatter(x, y)
         plt.title("Identity normalizer function example")
-        plt.xlabel("x")
-        plt.ylabel("Normalized x")
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
         plt.grid()
         plt.show()
 
@@ -70,9 +95,29 @@ class RelativeAscending(Normalizer):
                 return 100
             elif len(values) == 0:
                 return 0
-            return (index_of_x) / (len(values)-1) * 100
+            return (index_of_x) / (len(values) - 1) * 100
         except Exception as e:
             return 0
+
+    def plot_example(
+        self,
+        clip_range: Optional[Tuple[float, float]] = None,
+        horizontal: str = "Value",
+    ):
+
+        if clip_range is not None:
+            n_steps = 100
+            x = np.linspace(clip_range[0], clip_range[1], n_steps)
+        else:
+            x = np.linspace(-100, 100, 100)
+
+        y = [self.__call__(i, x) for i in x]
+        plt.scatter(x, y)
+        plt.title("Relative ascending function example")
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
+        plt.grid()
+        plt.show()
 
     @classmethod
     def get_description(cls) -> str:
@@ -91,28 +136,38 @@ class Step(Normalizer):
         else:
             return 100
 
-    def plot_example(self):
-        x = [random.randint(0, 100) for _ in range(15)]
+    def plot_example(
+        self,
+        clip_range: Optional[Tuple[float, float]] = None,
+        horizontal: str = "Value",
+    ):
+
+        if clip_range is not None:
+            n_steps = 100
+            x = np.linspace(clip_range[0], clip_range[1], n_steps)
+        else:
+            x = np.linspace(-100, 100, 100)
+
         y = [self.__call__(i) for i in x]
         plt.scatter(x, y)
-        plt.title("Step normalizer function example with threshold 35")
-        plt.xlabel("x")
-        plt.ylabel("Normalized x")
+        plt.title(f"Step function(threshold={self.threshold}) example")
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
         plt.grid()
         plt.show()
 
     @classmethod
     def get_description(cls) -> str:
-        return (
-            "Step function. Returns 0 if the value is below threshold, 100 if the value is above threshold."
-        )
+        return "Step function. Returns 0 if the value is below threshold, 100 if the value is above threshold."
 
     @classmethod
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return {"threshold": (
-            "Threshold below which all values are zero. "
-            "Above or equal which all values are 100"
-            )}
+        return {
+            "threshold": (
+                "Threshold below which all values are zero. "
+                "Above or equal which all values are 100"
+            )
+        }
 
 
 class Boolean(Normalizer):
@@ -122,13 +177,17 @@ class Boolean(Normalizer):
         else:
             return 100
 
-    def plot_example(self):
+    def plot_example(
+        self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
+    ):
+        if clip_range is None:
+            return False
         x = [0, 1]
         y = [self.__call__(i) for i in x]
         plt.scatter(x, y)
         plt.title("Boolean normalizer function example")
-        plt.xlabel("x")
-        plt.ylabel("Normalized x")
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
         plt.grid()
         plt.show()
 
@@ -137,60 +196,86 @@ class Boolean(Normalizer):
         return None
 
 
-class LinearPositive(Normalizer):
-    def __call__(self, x: int, range: Tuple[int, int]) -> float:
-        return 100 * (x - range[0]) / (range[1] - range[0])
-
-    def plot_example(self):
-        x = np.arange(1930, 2023)
-        y = [self.__call__(i, (1950, 2000)) for i in x]
-        plt.plot(x, y)
-        plt.title("Linear positive normalization function with range (1950, 2000)")
-        plt.xlabel("Year")
-        plt.ylabel("Normalized Year")
-        plt.grid()
-        plt.show()
-
-    @classmethod
-    def get_description(cls) -> str:
-        return (
-            "Linear positive function. Returns the value placed on a line defined by the given range. "
-            "The first value of the range is mapped to 0, the second value of the range is mapped to 100. "
-            "Values of x are mapped on this line."
-        )
-
-
-class LinearNegative(Normalizer):
-    def __call__(self, x: int, range: Tuple[int, int]) -> float:
-        return 100 - LinearPositive()(x, range)
-
-    def plot_example(self):
-        x = np.arange(1930, 2023)
-        y = [self.__call__(i, (1950, 2000)) for i in x]
-        plt.plot(x, y)
-        plt.title("Linear negative normalization function with range (1950, 2000)")
-        plt.xlabel("Year")
-        plt.ylabel("Normalized Year")
-        plt.grid()
-        plt.show()
-
-
 class StepLinearPositive(Normalizer):
-    def __call__(self, x: int, range: Tuple[int, int]) -> float:
-        if x < range[0]:
+    threshold_low: int
+    threshold_high: int
+
+    def __call__(self, x: int) -> float:
+        if x < self.threshold_low:
             return 0
-        elif x < range[1]:
-            return LinearPositive()(x, range)
+        elif x < self.threshold_high:
+            return (
+                100
+                * (x - self.threshold_low)
+                / (self.threshold_high - self.threshold_low)
+            )
         else:
             return 100
 
-    def plot_example(self):
-        x = np.arange(1930, 2023)
-        y = [self.__call__(i, (1950, 2000)) for i in x]
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        return {
+            "threshold_low": "Threshold above which all values are 0.",
+            "threshold_high": "Threshold above or equal which all values are 100.",
+        }
+
+    def plot_example(
+        self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
+    ):
+        diff = self.threshold_high - self.threshold_low
+        left_bound = clip_to(self.threshold_low - diff, clip_range)
+        right_bound = clip_to(self.threshold_high + diff, clip_range)
+
+        x = np.arange(left_bound, right_bound)
+        y = [self.__call__(i) for i in x]
         plt.plot(x, y)
-        plt.title("Step linear positive normalization function with range (1950, 2000)")
-        plt.xlabel("Year")
-        plt.ylabel("Normalized Year")
+        plt.title(
+            f"Step linear positive normalization function with range {(self.threshold_low, self.threshold_high)}"
+        )
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
+        plt.grid()
+        plt.show()
+
+
+class StepLinearNegative(Normalizer):
+    threshold_low: int
+    threshold_high: int
+
+    def __call__(self, x: int) -> float:
+        if x >= self.threshold_high:
+            return 0
+        elif x < self.threshold_low:
+            return 100
+        else:
+            return (
+                100
+                * (x - self.threshold_high)
+                / (self.threshold_low - self.threshold_high)
+            )
+
+    @classmethod
+    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
+        return {
+            "threshold_low": "Threshold below which all values are 100.",
+            "threshold_high": "Threshold above or equal which all values are 0.",
+        }
+
+    def plot_example(
+        self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
+    ):
+        diff = self.threshold_high - self.threshold_low
+        x = np.arange(
+            clip_to(self.threshold_low - diff, clip_range),
+            clip_to(self.threshold_high + diff, clip_range),
+        )
+        y = [self.__call__(i) for i in x]
+        plt.plot(x, y)
+        plt.title(
+            f"Step linear negative normalization function with range {(self.threshold_low, self.threshold_high)}"
+        )
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
         plt.grid()
         plt.show()
 
@@ -207,16 +292,16 @@ class Uniform(Normalizer):
 
     @classmethod
     def get_description(cls) -> str:
-        return (
-            "Uniform function. Returns the same value for all inputs."
-        )
+        return "Uniform function. Returns the same value for all inputs."
 
-    def plot_example(self):
-        x = np.arange(1930, 2023)
+    def plot_example(
+        self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
+    ):
+        x = np.arange(clip_range[0], clip_range[1])
         y = [self.__call__(i) for i in x]
         plt.plot(x, y)
         plt.title("Uniform normalization function with value 20")
-        plt.xlabel("Year")
-        plt.ylabel("Normalized Year")
+        plt.xlabel(f"{horizontal}")
+        plt.ylabel(f"Normalized {horizontal}")
         plt.grid()
         plt.show()
