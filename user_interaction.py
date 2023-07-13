@@ -49,23 +49,22 @@ def create_parameter():
             description = eval(f"parameter.{selected_parameter_name}.get_description()")
             print(description)
             print()
-    additional_parameters = eval(f"parameter.{selected_parameter_name}.get_fields_and_their_description()")
-    if additional_parameters is not None:
-        print()
-        print("This parameter has the following parameters:")
-        for k, v in additional_parameters.items():
-            print(f"{k:15}: {v}")
-        print()
+
+    parameter_class = eval(f"parameter.{selected_parameter_name}")
+    fields_to_description = get_class_fields_and_their_description(parameter_class)
+
+    for f, d in fields_to_description.items():
+        print(f"{f:15}: {d}")
+    print()
 
     selected_parameter_values = {}
-    if additional_parameters is not None:
-        for k in additional_parameters.keys():
-            answer = input(f"Please enter the {k}: ")
-            if answer == "":
-                answer = None
-            else:
-                answer = literal_eval(answer)
-            selected_parameter_values[k] = answer
+    for f in fields_to_description.keys():
+        answer = input(f"Please enter the {f}: ")
+        if answer == "":
+            answer = None
+        else:
+            answer = literal_eval(answer)
+        selected_parameter_values[f] = answer
 
     print(selected_parameter_values)
     p = eval(f"parameter.{selected_parameter_name}(**{selected_parameter_values})")

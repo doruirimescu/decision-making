@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, ClassVar
 from storable import Storable
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 import normalization.normalization as normalization
 
@@ -29,7 +29,7 @@ f"ARRAY represents parameters that store a list of values. \n"
 
 
 class Parameter(Storable):
-    name: str
+    name: str = Field(description="The name of the parameter (e.g. 'price').")
     weight: float = 1.0
     # How to use object instead of storing type and class separately
     normalizer: normalization.Normalizer = normalization.Identity()
@@ -50,16 +50,6 @@ class Parameter(Storable):
         return "Parameter description"
 
     @classmethod
-    def get_default_fields_and_their_description(cls) -> Dict[str, str]:
-        return {
-            "name": "The name of the parameter (e.g. 'price')."
-        }
-
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return cls.get_default_fields_and_their_description()
-
-    @classmethod
     def get_class_name(cls):
         return cls.__name__
 
@@ -68,7 +58,10 @@ class Parameter(Storable):
 
 
 class NumericalParameter(Parameter):
-    value_range: Optional[Tuple[float, float]] = None
+    value_range: Optional[Tuple[float, float]] = Field(
+        default=None,
+        description="The range of values (min, max) that the parameter's value can take. e.g. (0, 100)"
+    )
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -101,15 +94,6 @@ class NumericalParameter(Parameter):
             "Examples could be values related to costs, quantities, ratings, or scores."
         )
 
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        d = cls.get_default_fields_and_their_description()
-        d.update({
-            "value_range": "The range of values (min, max) that the parameter's "
-            "value can take. (e.g. (0, 100) for a price parameter)."
-            })
-        return d
-
 
 class BooleanParameter(Parameter):
     value: Optional[bool] = None
@@ -130,16 +114,16 @@ class BooleanParameter(Parameter):
             "Boolean parameters can be used to model factors such as availability, feasibility, or compatibility."
         )
 
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        d = cls.get_default_fields_and_their_description()
-        return d
-
 
 class EnumParameter(Parameter):
     # We need to add a dict that maps the enum names to their values
     value: Optional[str] = None
-    labels: dict
+    labels: dict = Field(
+        description=(
+            "Dictionary of labels and their corresponding values. "
+            "Value should be between 0-100 and map directly to a score."
+            )
+    )
 
     def add_new(self, label: str, value: int) -> None:
         self.labels[label] = value
@@ -151,12 +135,3 @@ class EnumParameter(Parameter):
             "Users can choose from a list of options to assign a value to the parameter. "
             "Enum parameters are useful for modeling attributes like quality levels, risk levels, or priority levels."
         )
-
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        d = cls.get_default_fields_and_their_description()
-        d.update({
-            "labels": "Dictionary of labels and their corresponding values. "
-            "value should be between 0-100 and map directly to a score."
-            })
-        return d
