@@ -95,16 +95,15 @@ def create_normalizer(value_range: Optional[Tuple[int,int]], parameter_name: str
             print(description)
             print()
 
-    additional_parameters = eval(f"normalization.{selected_normalizer_name}.get_fields_and_their_description()")
-    if additional_parameters is not None:
-        print("This normalizer has additional parameters:")
-        for k, v in additional_parameters.items():
-            print(f"{k}: {v}")
-        print()
+    normalizer_class = eval(f"normalization.{selected_normalizer_name}")
+    for k, v in normalizer_class.__fields__.items():
+        if v.description:
+            print(f"{k}: {v.description}")
+    print()
 
     selected_parameter_values = {}
-    if additional_parameters is not None:
-        for k in additional_parameters.keys():
+    for k, v in normalizer_class.__fields__.items():
+        if v.description:
             from ast import literal_eval
             selected_parameter_values[k] = literal_eval(input(f"Please enter the value for {k}: "))
 
@@ -176,7 +175,7 @@ def get_parameter_weights(parameters: List) -> None:
     print()
 
 
-def create_dataset() -> dataset.Dataset:
+def create_dataset() -> Optional[dataset.Dataset]:
     print("Would you like to create a new dataset or use an existing one?")
     print("0: Create a new dataset")
     print("1: Use an existing dataset")
@@ -198,6 +197,8 @@ def create_dataset() -> dataset.Dataset:
         return d
     elif answer == "2":
         return None
+    return None
+
 
 def create_model() -> Model:
     introduction()

@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 def clip_to(value: float, clip_range: Optional[Tuple[int, int]] = None) -> float:
@@ -48,10 +48,6 @@ class Normalizer(ABC, BaseModel):
     @classmethod
     def get_description(cls) -> str:
         return "Normalizer description"
-
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return None
 
     def get_type(self):
         return self.__class__.__name__
@@ -128,7 +124,11 @@ class RelativeAscending(Normalizer):
 
 
 class Step(Normalizer):
-    threshold: int
+    threshold: int = Field(description=(
+        "Threshold below which all values are zero. "
+        "Above or equal which all values are 100"
+        )
+    )
 
     def __call__(self, x: int) -> float:
         if x < self.threshold:
@@ -160,15 +160,6 @@ class Step(Normalizer):
     def get_description(cls) -> str:
         return "Step function. Returns 0 if the value is below threshold, 100 if the value is above threshold."
 
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return {
-            "threshold": (
-                "Threshold below which all values are zero. "
-                "Above or equal which all values are 100"
-            )
-        }
-
 
 class Boolean(Normalizer):
     def __call__(self, x: int) -> float:
@@ -197,8 +188,8 @@ class Boolean(Normalizer):
 
 
 class StepLinearPositive(Normalizer):
-    threshold_low: int
-    threshold_high: int
+    threshold_low: int = Field(description="Threshold below which all values are 0.")
+    threshold_high: int = Field(description="Threshold above or equal which all values are 100.")
 
     def __call__(self, x: int) -> float:
         if x < self.threshold_low:
@@ -211,13 +202,6 @@ class StepLinearPositive(Normalizer):
             )
         else:
             return 100
-
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return {
-            "threshold_low": "Threshold above which all values are 0.",
-            "threshold_high": "Threshold above or equal which all values are 100.",
-        }
 
     def plot_example(
         self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
@@ -239,8 +223,8 @@ class StepLinearPositive(Normalizer):
 
 
 class StepLinearNegative(Normalizer):
-    threshold_low: int
-    threshold_high: int
+    threshold_low: int = Field(description="Threshold below which all values are 100.")
+    threshold_high: int = Field(description="Threshold above or equal which all values are 0.")
 
     def __call__(self, x: int) -> float:
         if x >= self.threshold_high:
@@ -253,13 +237,6 @@ class StepLinearNegative(Normalizer):
                 * (x - self.threshold_high)
                 / (self.threshold_low - self.threshold_high)
             )
-
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return {
-            "threshold_low": "Threshold below which all values are 100.",
-            "threshold_high": "Threshold above or equal which all values are 0.",
-        }
 
     def plot_example(
         self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"
@@ -281,11 +258,7 @@ class StepLinearNegative(Normalizer):
 
 
 class Uniform(Normalizer):
-    uniform_value: float
-
-    @classmethod
-    def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
-        return {"uniform_value": "Value to which all values are normalized."}
+    uniform_value: float = Field(description="Value to which all values are normalized.")
 
     def __call__(self, x: int) -> float:
         return self.uniform_value
