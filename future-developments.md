@@ -1,4 +1,19 @@
-# General directions
+## Top improvements
+**Sensitivity Analysis Tools**: Develop tools or visualizations to perform sensitivity analysis on parameters and their weights. 
+This allows users to assess the impact of varying parameter values or weight configurations on decision outcomes. 
+By understanding the sensitivity of the decision to different factors, users can make more informed and robust decisions.
+
+**External Data Integration**: Expand your framework to integrate external data sources that provide relevant information for decision-making. 
+This can include real-time market data, expert opinions, or user-generated content. 
+By incorporating external data, users can access up-to-date and diverse information to enhance the quality of their decision-making process.
+
+Interactive User Interface: Create an intuitive and interactive user interface that simplifies the process of building decision models, 
+managing datasets, and interpreting results. A user-friendly interface with clear visualizations, drag-and-drop functionality, and interactive controls can enhance the usability and adoption of your framework.
+
+
+
+
+## General directions
 
 1. Model Templates: Provide users with pre-defined model templates for common decision scenarios. These templates can serve as starting points,
 including default parameters, descriptions, and normalizers, specific to certain domains or decision types. Users can then modify and customize these templates to fit their specific needs.
