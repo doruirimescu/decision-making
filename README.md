@@ -1,6 +1,6 @@
 # decision-making
 
-# A software framework to enable decision making
+# A software framework to enable human decision making
 
 * Based on socratic model
 * Simple user interface that guides the user by asking questions
