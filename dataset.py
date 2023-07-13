@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Any, ClassVar, List, Optional, Tuple
+from typing import ClassVar, List, Optional
 
 from pandas import DataFrame as df
 from pydantic import BaseModel

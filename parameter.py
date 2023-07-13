@@ -1,5 +1,4 @@
-from enum import Enum
-from typing import Any, ClassVar, Dict, List, Optional, Tuple
+from typing import Any, ClassVar, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 

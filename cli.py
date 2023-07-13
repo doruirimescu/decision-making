@@ -1,6 +1,5 @@
 #!/usr/bin/env python3.10
 import argparse
-from typing import Tuple
 
 import normalization.normalization as normalization
 import parameter
