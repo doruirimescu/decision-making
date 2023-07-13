@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, ClassVar
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +26,7 @@ class Normalizer(ABC, BaseModel):
     i.e. a value between 0 and 100.
     """
 
-    description: str = "Normalizer description"
+    description: ClassVar[str] = "Normalizer description"
 
     @abstractmethod
     def __call__(self, *args, **kwargs) -> float:
@@ -45,15 +45,14 @@ class Normalizer(ABC, BaseModel):
     def get_subclasses_as_list(cls):
         return [subclass.__name__ for subclass in cls.__subclasses__()]
 
-    @classmethod
-    def get_description(cls) -> str:
-        return "Normalizer description"
 
     def get_type(self):
         return self.__class__.__name__
 
 
 class Identity(Normalizer):
+    description: ClassVar[str] = "Identity function. Returns the value without any changes."
+
     def __call__(self, x: float) -> float:
         return x
 
@@ -77,12 +76,13 @@ class Identity(Normalizer):
         plt.grid()
         plt.show()
 
-    @classmethod
-    def get_description(cls) -> str:
-        return "Identity function. Returns the value without any changes."
-
 
 class RelativeAscending(Normalizer):
+    description: ClassVar[str] = (
+        "Relative ascending function. Returns the value relative to the minimum "
+        "and maximum values. 0-100"
+    )
+
     def __call__(self, x: int, values: List[int]) -> float:
         sorted_values = sorted(values)
         try:
@@ -115,15 +115,13 @@ class RelativeAscending(Normalizer):
         plt.grid()
         plt.show()
 
-    @classmethod
-    def get_description(cls) -> str:
-        return (
-            "Relative ascending function. Returns the value relative to the minimum "
-            "and maximum values. 0-100"
-        )
-
 
 class Step(Normalizer):
+    description: ClassVar[str] = (
+        "Step function. Returns 0 if the value is below threshold, 100 "
+        "if the value is above threshold."
+    )
+
     threshold: int = Field(description=(
         "Threshold below which all values are zero. "
         "Above or equal which all values are 100"
@@ -156,12 +154,11 @@ class Step(Normalizer):
         plt.grid()
         plt.show()
 
-    @classmethod
-    def get_description(cls) -> str:
-        return "Step function. Returns 0 if the value is below threshold, 100 if the value is above threshold."
-
 
 class Boolean(Normalizer):
+    description: ClassVar[str] = (
+        "Boolean function. Returns 0 if the value is 0, 100 "
+    )
     def __call__(self, x: int) -> float:
         if x == 0:
             return 0
@@ -188,6 +185,11 @@ class Boolean(Normalizer):
 
 
 class StepLinearPositive(Normalizer):
+    description: ClassVar[str] = (
+        "Step linear positive function. Returns 0 if the value is below threshold, "
+        "100 if the value is above threshold. Between threshold and 0, the value is"
+        "linearly interpolated between 0 and 100."
+    )
     threshold_low: int = Field(description="Threshold below which all values are 0.")
     threshold_high: int = Field(description="Threshold above or equal which all values are 100.")
 
@@ -223,6 +225,11 @@ class StepLinearPositive(Normalizer):
 
 
 class StepLinearNegative(Normalizer):
+    description: ClassVar[str] = (
+        "Step linear negative function. Returns 100 if the value is below threshold, "
+        "0 if the value is above threshold. Between threshold and 0, the value is"
+        "linearly interpolated between 100 and 0."
+    )
     threshold_low: int = Field(description="Threshold below which all values are 100.")
     threshold_high: int = Field(description="Threshold above or equal which all values are 0.")
 
@@ -258,14 +265,13 @@ class StepLinearNegative(Normalizer):
 
 
 class Uniform(Normalizer):
+    description: ClassVar[str] = (
+        "Uniform function. Returns the same value for all inputs."
+    )
     uniform_value: float = Field(description="Value to which all values are normalized.")
 
     def __call__(self, x: int) -> float:
         return self.uniform_value
-
-    @classmethod
-    def get_description(cls) -> str:
-        return "Uniform function. Returns the same value for all inputs."
 
     def plot_example(
         self, clip_range: Optional[Tuple[int, int]] = None, horizontal: str = "Value"

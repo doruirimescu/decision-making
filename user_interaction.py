@@ -30,85 +30,64 @@ def introduction():
     print("")
 
 
-def create_parameter():
+def create_custom_object(cls, module_name: str, name: str):
+    """Creates a custom object of the given class' subclass. The user is prompted to enter the
+    desired subclass and its parameters. The object is then created and returned.
+    """
     print()
-    print(f"Choose a parameter. The options are:")
-
-    for i, n in enumerate(parameter.Parameter.get_subclasses_as_list()):
+    print(f"Choose a {name}. The options are:")
+    subclasses = cls.get_subclasses_as_list()
+    for i, n in enumerate(subclasses):
         print(f"{i}: {n}")
     n = ["", ""]
 
     while len(n) > 1:
         n = input(
-            f"\nPlease enter the desired parameter number. \n"
+            f"\nPlease enter the desired {name} number. \n"
             "If a description is needed, follow it by a zero, eg. 1 0:"
             ).split(" ")
-        selected_parameter_name = parameter.Parameter.get_subclasses_as_list()[int(n[0])]
-        if len(n) > 1:
-            print()
-            description = eval(f"parameter.{selected_parameter_name}.get_description()")
+        selection = int(n[0])
+        if len(n) > 2 or selection >= len(subclasses):
+            print("Please enter a valid number.")
+            continue
+
+        selected_subclass_name = subclasses[selection]
+        selected_subclass = eval(f"{module_name}.{selected_subclass_name}")
+        if len(n) == 2:
+            description = wrap_text_to_80_chars(selected_subclass.description)
             print(description)
             print()
 
-    parameter_class = eval(f"parameter.{selected_parameter_name}")
-    fields_to_description = get_class_fields_and_their_description(parameter_class)
+    fields_to_description = get_class_fields_and_their_description(selected_subclass)
 
     for f, d in fields_to_description.items():
         print(f"{f:15}: {d}")
     print()
 
-    selected_parameter_values = {}
+    object_creation_arguments = {}
     for f in fields_to_description.keys():
         answer = input(f"Please enter the {f}: ")
         if answer == "":
             answer = None
         else:
             answer = literal_eval(answer)
-        selected_parameter_values[f] = answer
+        object_creation_arguments[f] = answer
 
-    print(selected_parameter_values)
-    p = eval(f"parameter.{selected_parameter_name}(**{selected_parameter_values})")
+    print(f"You created: {selected_subclass_name}({object_creation_arguments})")
+    return selected_subclass(**object_creation_arguments)
 
 
-    if MODIFY_NORMALIZER and should_change_default(
-        "normalizer", p.normalizer.get_type()
-        ):
+def create_parameter():
+    p = create_custom_object(parameter.Parameter, "parameter", "parameter")
+
+    if MODIFY_NORMALIZER and should_change_default("normalizer", p.normalizer.get_type()):
         print()
         p.normalizer = create_normalizer(p.__getattribute__("value_range"), p.name)
     return p
 
 
-def create_normalizer(value_range: Optional[Tuple[int,int]], parameter_name: str):
-    print()
-    print("Choose a normalizer. The options are:")
-    for i, n in enumerate(normalization.Normalizer.get_subclasses_as_list()):
-        print(f"{i}: {n}")
-    n = ["", ""]
-    while len(n) > 1:
-        n = input(
-            f"\nPlease enter the desired normalizer number. \n"
-            "If a description is needed, follow it by a zero, eg. 1 0:"
-            ).split(" ")
-        selected_normalizer_name = normalization.Normalizer.get_subclasses_as_list()[int(n[0])]
-        if len(n) > 1:
-            print()
-            description = eval(f"normalization.{selected_normalizer_name}.get_description()")
-            print(description)
-            print()
-
-    normalizer_class = eval(f"normalization.{selected_normalizer_name}")
-    fields_to_description = get_class_fields_and_their_description(normalizer_class)
-
-    for f, d in fields_to_description.items():
-        print(f"{f}: {d}")
-    print()
-
-    selected_parameter_values = {}
-    for f in fields_to_description.keys():
-        selected_parameter_values[f] = literal_eval(input(f"Please enter the value for {f}: "))
-
-    normalizer = eval(f"normalization.{selected_normalizer_name}(**{selected_parameter_values})")
-    print(f"You created: {selected_normalizer_name}({selected_parameter_values})")
+def create_normalizer(value_range: Optional[Tuple[int, int]], parameter_name: str):
+    normalizer = create_custom_object(normalization.Normalizer, "normalization", "normalizer")
     normalizer.plot_example(value_range, parameter_name)
     print()
     return normalizer
@@ -235,7 +214,7 @@ def list_class(t) -> None:
         initial_indent = 25 - len(DESCRIPTION)
         subsequent_indent = 25
         text = wrap_text_to_80_chars(
-            subclass.get_description(),
+            subclass.description,
             initial_indent,
             subsequent_indent)
         print(f'{DESCRIPTION}{text}')
