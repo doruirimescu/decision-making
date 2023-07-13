@@ -6,8 +6,10 @@ from colorama import Fore, Style
 import dataset
 import normalization.normalization as normalization
 import parameter
-from helpers import indent_n_chars, wrap_text_to_80_chars
+from helpers import indent_n_chars, wrap_text_to_80_chars, get_class_fields_and_their_description
 from model import Model
+from ast import literal_eval
+
 
 # Constants for debugging
 MODIFY_NORMALIZER = True
@@ -96,16 +98,15 @@ def create_normalizer(value_range: Optional[Tuple[int,int]], parameter_name: str
             print()
 
     normalizer_class = eval(f"normalization.{selected_normalizer_name}")
-    for k, v in normalizer_class.__fields__.items():
-        if v.description:
-            print(f"{k}: {v.description}")
+    fields_to_description = get_class_fields_and_their_description(normalizer_class)
+
+    for f, d in fields_to_description.items():
+        print(f"{f}: {d}")
     print()
 
     selected_parameter_values = {}
-    for k, v in normalizer_class.__fields__.items():
-        if v.description:
-            from ast import literal_eval
-            selected_parameter_values[k] = literal_eval(input(f"Please enter the value for {k}: "))
+    for f in fields_to_description.keys():
+        selected_parameter_values[f] = literal_eval(input(f"Please enter the value for {f}: "))
 
     normalizer = eval(f"normalization.{selected_normalizer_name}(**{selected_parameter_values})")
     print(f"You created: {selected_normalizer_name}({selected_parameter_values})")
