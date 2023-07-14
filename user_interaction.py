@@ -1,5 +1,5 @@
 from ast import literal_eval
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 
 from colorama import Fore, Style
 
@@ -81,12 +81,12 @@ def create_parameter():
 
     if MODIFY_NORMALIZER and should_change_default("normalizer", p.normalizer.get_type()):
         print()
-        p.normalizer = create_normalizer(p.__getattribute__("value_range"), p.name)
+        p.normalizer = create_normalizer(p.__getattribute__("value_range"), p.name, p.normalizer_family)
     return p
 
 
-def create_normalizer(value_range: Optional[Tuple[int, int]], parameter_name: str):
-    normalizer = create_custom_object(normalization.Normalizer, "normalization", "normalizer")
+def create_normalizer(value_range: Optional[Tuple[int, int]], parameter_name: str, normalizer_family = normalization.Normalizer):
+    normalizer = create_custom_object(normalizer_family, "normalization", "normalizer")
     normalizer.plot_example(value_range, parameter_name)
     print()
     return normalizer

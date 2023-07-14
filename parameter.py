@@ -1,9 +1,11 @@
-from typing import Any, ClassVar, List, Optional, Tuple
+from typing import Any, ClassVar, List, Optional, Tuple, Any
 
 from pydantic import BaseModel, Field
 
 import normalization.normalization as normalization
 from storable import Storable
+from datetime import date, datetime
+from helpers import TIME_RANGE_TYPE, TIME_TYPE
 
 f"TEXT represents parameters that accept free-form text input. \n"
 "Text parameters can capture qualitative information, user comments, or subjective evaluations."
@@ -34,6 +36,7 @@ class Parameter(Storable):
     normalizer: normalization.Normalizer = normalization.Identity()
     storage_folder: ClassVar[str] = "data/parameter/"
     description: ClassVar[str] = "Parameter description"
+    normalizer_family: Any = normalization.Normalizer
 
     def evaluate_score(self, value: Any) -> float:
         return self.normalizer(value)
@@ -62,6 +65,7 @@ class NumericalParameter(Parameter):
         default=None,
         description="The range of values (min, max) that the parameter's value can take. e.g. (0, 100)"
     )
+    normalizer_family: Any = normalization.NumericalNormalizerFamily
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "value_range":
@@ -95,6 +99,7 @@ class BooleanParameter(Parameter):
     )
     value: Optional[bool] = None
     normalizer: normalization.Normalizer = normalization.Boolean()
+    normalizer_family: Any = normalization.BooleanNormalizerFamily
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         super().__setattr__(__name, __value)
@@ -122,3 +127,42 @@ class EnumParameter(Parameter):
 
     def add_new(self, label: str, value: int) -> None:
         self.labels[label] = value
+
+
+class TimeParameter(Parameter):
+    description: ClassVar[str] = (
+        "TimeParameter represents parameters that store time values. "
+        "Time parameters can be used to capture time-sensitive factors, "
+        "deadlines, or temporal aspects of decision-making."
+    )
+    value_range: Optional[TIME_RANGE_TYPE] = Field(
+        default=None,
+        description="The range of time values (start, end) that the parameter can take."
+    )
+    normalizer: normalization.Normalizer = normalization.Uniform(uniform_value=0)
+    normalizer_family: Any = normalization.TimeNormalizerFamily
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name == "value_range":
+            if __value is not None and __value[0] > __value[1]:
+                raise ValueError(
+                    f"The start time of the range cannot be greater than the end time."
+                )
+        super().__setattr__(__name, __value)
+
+    def is_value_valid(self, value: TIME_TYPE) -> bool:
+        if not isinstance(value, TIME_TYPE):
+            print(f"Value must be a {TIME_TYPE} object.")
+            return
+        if self.value_range is not None:
+            if value < self.value_range[0]:
+                print(
+                    f"The value cannot be before the start time of the range ({self.value_range[0]})."
+                )
+                return False
+            elif value > self.value_range[1]:
+                print(
+                    f"The value cannot be after the end time of the range ({self.value_range[1]})."
+                )
+                return False
+        return True
