@@ -23,3 +23,4 @@ def get_class_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
 
 TIME_TYPE = datetime.date | datetime.datetime
 TIME_RANGE_TYPE = Tuple[TIME_TYPE, TIME_TYPE]
+FLOAT_RANGE_TYPE = Tuple[float, float]

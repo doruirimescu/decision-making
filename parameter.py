@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, field_serializer, model_serializer
 import normalization.normalization as normalization
 from storable import Storable
 from datetime import date, datetime
-from helpers import TIME_RANGE_TYPE, TIME_TYPE
+from helpers import TIME_RANGE_TYPE, TIME_TYPE, FLOAT_RANGE_TYPE
 
 
 f"TEXT represents parameters that accept free-form text input. \n"
@@ -70,7 +70,7 @@ class NumericalParameter(Parameter):
         "NumericalParameter represents parameters that have numeric values. "
         "Examples could be values related to costs, quantities, ratings, or scores."
     )
-    value_range: Optional[Tuple[float, float]] = Field(
+    value_range: Optional[FLOAT_RANGE_TYPE] = Field(
         default=None,
         description="The range of values (min, max) that the parameter's value can take. e.g. (0, 100)"
     )

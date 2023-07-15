@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, model_serializer
 
 import sys
 sys.path.append(".")
-from helpers import TIME_TYPE, TIME_RANGE_TYPE
+from helpers import TIME_TYPE, TIME_RANGE_TYPE, FLOAT_RANGE_TYPE
 
 
 def clip_to(value: Any, clip_range: Optional[Tuple[Any, Any]] = None) -> Any:
@@ -75,7 +75,7 @@ class Identity(NumericalNormalizerFamily):
 
     def plot_example(
         self,
-        clip_range: Optional[Tuple[float, float]] = None,
+        clip_range: Optional[FLOAT_RANGE_TYPE] = None,
         horizontal: str = "Value",
     ):
 
@@ -114,7 +114,7 @@ class RelativeAscending(NumericalNormalizerFamily):
 
     def plot_example(
         self,
-        clip_range: Optional[Tuple[float, float]] = None,
+        clip_range: Optional[FLOAT_RANGE_TYPE] = None,
         horizontal: str = "Value",
     ):
 
@@ -153,7 +153,7 @@ class Step(NumericalNormalizerFamily):
 
     def plot_example(
         self,
-        clip_range: Optional[Tuple[float, float]] = None,
+        clip_range: Optional[FLOAT_RANGE_TYPE] = None,
         horizontal: str = "Value",
     ):
 

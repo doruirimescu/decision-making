@@ -134,7 +134,7 @@ def get_parameter_weights(parameters: List) -> None:
         )
 
     for i, p in enumerate(parameters):
-        print(f"{i}: parameter: {p.name} weight: {p.weight}")
+        print(f"{i}. parameter: {p.name} weight: {p.weight}")
 
     def get_answer():
         return input("Enter the index of the parameter you want to change, or enter 'done': ")
