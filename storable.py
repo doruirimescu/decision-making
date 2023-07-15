@@ -2,9 +2,8 @@ import json
 import os
 import pathlib
 import pickle
-from typing import ClassVar, Dict, Any
-
-from pydantic import BaseModel, model_serializer, SerializerFunctionWrapHandler
+from typing import ClassVar
+from pydantic import BaseModel
 
 
 class Storable(BaseModel):
@@ -22,7 +21,6 @@ class Storable(BaseModel):
     def store_json(self) -> None:
         pathlib.Path(self.get_path()).parent.mkdir(parents=True, exist_ok=True)
         with open(self.get_path() + ".json", 'w+') as f:
-            print(f"Called by class {self.__class__}")
             data = self.model_dump()
             json.dump(data, f, indent=4)
 
@@ -37,7 +35,6 @@ class Storable(BaseModel):
     def load_json(cls, name: str):
         with open(f"{cls.storage_folder}/{name}.json", 'r') as f:
             d = json.load(f)
-            print(d)
             return d
 
     @classmethod
