@@ -1,11 +1,11 @@
-from typing import Any, ClassVar, List, Optional, Tuple, Any
+from typing import Any, ClassVar, List, Optional, Tuple, Any, Dict
 
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel, Field, field_serializer, model_serializer
 import normalization.normalization as normalization
 from storable import Storable
 from datetime import date, datetime
 from helpers import TIME_RANGE_TYPE, TIME_TYPE
+
 
 f"TEXT represents parameters that accept free-form text input. \n"
 "Text parameters can capture qualitative information, user comments, or subjective evaluations."
@@ -37,6 +37,18 @@ class Parameter(Storable):
     storage_folder: ClassVar[str] = "data/parameter/"
     description: ClassVar[str] = "Parameter description"
     normalizer_family: Any = normalization.Normalizer
+
+    @field_serializer('normalizer_family')
+    def serialize_normalizer_family(self, value: Any) -> str:
+        return value.__name__
+
+    @classmethod
+    def deserialize(self, name: str):
+        d = self.load_json(name)
+        d['normalizer_family'] = eval(f"normalization.{d['normalizer_family']}")
+        normalizer_class = "normalization." + d['normalizer']['type']
+        d['normalizer'] = eval(normalizer_class)(**d['normalizer'])
+        return self(**d)
 
     def evaluate_score(self, value: Any) -> float:
         return self.normalizer(value)
@@ -139,7 +151,7 @@ class TimeParameter(Parameter):
         default=None,
         description="The range of time values (start, end) that the parameter can take."
     )
-    normalizer: normalization.Normalizer = normalization.Uniform(uniform_value=0)
+    normalizer: Any = normalization.Uniform(uniform_value=0)
     normalizer_family: Any = normalization.TimeNormalizerFamily
 
     def __setattr__(self, __name: str, __value: Any) -> None:

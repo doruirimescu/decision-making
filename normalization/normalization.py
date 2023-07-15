@@ -3,7 +3,7 @@ from typing import ClassVar, Dict, List, Optional, Tuple, Any
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_serializer
 from datetime import datetime, date, timedelta
 
 import sys
@@ -48,9 +48,15 @@ class Normalizer(ABC, BaseModel):
     def get_subclasses_as_list(cls):
         return [subclass.__name__ for subclass in cls.__subclasses__()]
 
-
     def get_type(self):
         return self.__class__.__name__
+
+    @model_serializer
+    def ser_model(self) -> Dict[str, Any]:
+        d = dict(self)
+        d['description'] = f'{self.description}'
+        d['type'] = self.get_type() # Used for deserialization
+        return d
 
 
 class TimeNormalizerFamily(Normalizer):
@@ -195,6 +201,7 @@ class Boolean(Normalizer):
     @classmethod
     def get_fields_and_their_description(cls) -> Optional[Dict[str, str]]:
         return None
+
 
 
 class StepLinearPositive(NumericalNormalizerFamily):

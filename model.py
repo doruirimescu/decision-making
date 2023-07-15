@@ -3,7 +3,7 @@ from typing import ClassVar, Dict, List, Optional
 from dataset import Dataset, ParameterData
 from parameter import Parameter
 from storable import Storable
-
+import os
 
 class Model(Storable):
     parameters: List[Parameter]
@@ -19,9 +19,19 @@ class Model(Storable):
                 datasets[i] = Dataset(**Dataset.load_json(dataset.name))
         data["datasets"] = datasets
 
+        Parameter.storage_folder = self.storage_folder + data.get("name") + "/parameters/"
+        # If storage folder exists, load parameters from json
+        do_parameters_exist = False
+        if os.path.isdir(Parameter.storage_folder):
+            do_parameters_exist = True
         parameters_by_name = dict()
         for parameter in data.get("parameters"):
+            if do_parameters_exist:
+                parameter = Parameter.deserialize(parameter.name)
+            else:
+                parameter.store_json()
             parameters_by_name[parameter.name] = parameter
+
         data["parameters_by_name"] = parameters_by_name
         super().__init__(**data)
 
