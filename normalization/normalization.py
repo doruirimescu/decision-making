@@ -57,6 +57,9 @@ class Normalizer(ABC, BaseModel):
         d['type'] = self.get_type() # Used for deserialization
         return d
 
+    def __str__(self) -> str:
+        return self.__repr__()
+
 
 class TimeNormalizerFamily(Normalizer):
     pass

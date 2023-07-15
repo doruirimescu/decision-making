@@ -40,7 +40,8 @@ def create_custom_object(cls, module_name: str, name: str):
         print(f"{i}: {n}")
     n = ["", ""]
 
-    while len(n) > 1:
+    is_selection_valid = False
+    while len(n) > 1 or not is_selection_valid:
         n = input(
             f"\nPlease enter the desired {name} number. \n"
             "If a description is needed, follow it by a zero, eg. 1 0:"
@@ -48,6 +49,7 @@ def create_custom_object(cls, module_name: str, name: str):
         selection = int(n[0])
         if len(n) > 2 or selection >= len(subclasses):
             print("Please enter a valid number.")
+            is_selection_valid = False
             continue
 
         selected_subclass_name = subclasses[selection]
@@ -56,6 +58,7 @@ def create_custom_object(cls, module_name: str, name: str):
             description = wrap_text_to_80_chars(selected_subclass.description)
             print(description)
             print()
+        is_selection_valid = True
 
     fields_to_description = get_class_fields_and_their_description(selected_subclass)
 
@@ -79,7 +82,7 @@ def create_custom_object(cls, module_name: str, name: str):
 def create_parameter():
     p = create_custom_object(parameter.Parameter, "parameter", "parameter")
 
-    if MODIFY_NORMALIZER and should_change_default("normalizer", p.normalizer.get_type()):
+    if MODIFY_NORMALIZER and should_change_default("normalizer", p.normalizer):
         print()
         p.normalizer = create_normalizer(p.__getattribute__("value_range"), p.name, p.normalizer_family)
     return p

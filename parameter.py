@@ -64,6 +64,9 @@ class Parameter(Storable):
     def get_class_name(cls):
         return cls.__name__
 
+    def __str__(self) -> str:
+        return self.__repr__()
+
 
 class NumericalParameter(Parameter):
     description: ClassVar[str] = (
