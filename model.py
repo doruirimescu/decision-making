@@ -5,6 +5,7 @@ from parameter import Parameter
 from storable import Storable
 import os
 
+
 class Model(Storable):
     parameters: List[Parameter]
     parameters_by_name: Optional[Dict[str, Parameter]]

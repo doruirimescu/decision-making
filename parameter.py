@@ -64,9 +64,6 @@ class Parameter(Storable):
     def get_class_name(cls):
         return cls.__name__
 
-    def describe(self):
-        return f"Name: {self.name} type: {self.get_class_name()} value range: {self.value_range}"
-
 
 class NumericalParameter(Parameter):
     description: ClassVar[str] = (
