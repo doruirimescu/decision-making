@@ -31,6 +31,7 @@ f"ARRAY represents parameters that store a list of values. \n"
 
 class Parameter(Storable):
     name: str = Field(description="The name of the parameter (e.g. 'price').")
+    unit: str = Field(description="The unit of the parameter (e.g. 'EUR').")
     weight: float = 1.0
     # How to use object instead of storing type and class separately
     normalizer: normalization.Normalizer = normalization.Identity()
