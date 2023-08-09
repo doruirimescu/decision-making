@@ -4,6 +4,7 @@ import pathlib
 import pickle
 from typing import ClassVar
 from pydantic import BaseModel
+import shutil
 
 
 class Storable(BaseModel):
@@ -11,11 +12,12 @@ class Storable(BaseModel):
     storage_folder: ClassVar[str] = "data/"
 
     def get_path(self) -> str:
-        return self.storage_folder + self.name
+        return self.storage_folder + "/" + self.name
 
     def store_binary(self) -> None:
-        pathlib.Path(self.get_path()).parent.mkdir(parents=True, exist_ok=True)
-        with open(self.get_path() + ".bin", 'wb+') as f:
+        folder_location = self.get_path() + "/" + self.name
+        pathlib.Path(folder_location).parent.mkdir(parents=True, exist_ok=True)
+        with open(folder_location + ".bin", 'wb+') as f:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     def store_json(self) -> None:
@@ -26,7 +28,8 @@ class Storable(BaseModel):
 
     @classmethod
     def load_binary(cls, name: str):
-        with open(f"{cls.storage_folder}/{name}.bin", 'rb') as f:
+        # Used only by models
+        with open(f"{cls.storage_folder}/{name}/{name}.bin", 'rb') as f:
             m = pickle.load(f)
             m.__init__(**m.__dict__)
             return m
@@ -39,7 +42,8 @@ class Storable(BaseModel):
 
     @classmethod
     def delete_binary(cls, name: str) -> None:
-        os.remove(f"{cls.storage_folder}//{name}.bin")
+        # only used by models
+        os.remove(f"{cls.storage_folder}/{name}")
 
     @classmethod
     def delete_json(cls, name: str) -> None:

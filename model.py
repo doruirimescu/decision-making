@@ -21,6 +21,7 @@ class Model(Storable):
         data["datasets"] = datasets
 
         Parameter.storage_folder = self.storage_folder + data.get("name") + "/parameters"
+
         # If storage folder exists, load parameters from json
         do_parameters_exist = False
         if os.path.isdir(Parameter.storage_folder):

@@ -8,6 +8,52 @@ sys.path.append(str(current_path))
 
 from dataset import DataPoint, Dataset, ParameterData
 
+def create_company_dataset():
+    codespark = DataPoint(
+        name="Codespark",
+        parameter_datas=[
+            ParameterData(name="name", value="Code Spark", score=100),
+        ],
+        total_score = 100
+    )
+    codewise = DataPoint(
+        name="Codewise",
+        parameter_datas=[
+            ParameterData(name="name", value="Code Wise", score=0),
+        ],
+        total_score = 100
+    )
+
+    codefusion = DataPoint(
+        name="Codefusion",
+        parameter_datas=[
+            ParameterData(name="name", value="Code Fusion", score=0),
+        ],
+        total_score = 100
+    )
+
+    invariant_tech = DataPoint(
+        name="Invariantech",
+        parameter_datas=[
+            ParameterData(name="name", value="InvarianTech", score=0),
+        ],
+        total_score = 100
+    )
+
+    convex_optimal = DataPoint(
+        name="Convex Optimal",
+        parameter_datas=[
+            ParameterData(name="name", value="Convex Optimal", score=0),
+        ],
+        total_score = 100
+    )
+
+    ds = Dataset(
+        name="Companies",
+        description="Possible company names",
+        data_points=[codespark, codewise, codefusion, invariant_tech, convex_optimal],
+    )
+    return ds
 
 def create_test_dataset():
     les_paul = DataPoint(
@@ -50,32 +96,33 @@ def create_test_dataset():
     )
     return ds
 
+td = create_company_dataset()
+td.dataframe().to_json('examples/company.json', indent=4, index=True)
+
+# td = create_test_dataset()
+# print(td.dataframe())
+
+# print()
+
+# print(td.order_by_parameter_value('year'))
+
+# print()
+# print(td.order_by_parameter_value('total_score'))
+
+# dataframe = td.order_by_parameter_value('total_score')
+# dataframe.to_json('examples/example.json', indent=4, index=True)
+
+# print()
+# # load dataframe from json
+# import pandas as pd
+
+# df = pd.read_json('examples/example.json')
 
 
-td = create_test_dataset()
-print(td.dataframe())
+# # df to dict of dicts
+# dict_of_dicts = df.to_dict(orient='index')
 
-print()
+# dataset_from_df = Dataset(name='dataset_from_df', description='dataset_from_df')
+# dataset_from_df.from_dataframe(df)
 
-print(td.order_by_parameter_value('year'))
-
-print()
-print(td.order_by_parameter_value('total_score'))
-
-dataframe = td.order_by_parameter_value('total_score')
-dataframe.to_json('examples/example.json', indent=4, index=True)
-
-print()
-# load dataframe from json
-import pandas as pd
-
-df = pd.read_json('examples/example.json')
-
-
-# df to dict of dicts
-dict_of_dicts = df.to_dict(orient='index')
-
-dataset_from_df = Dataset(name='dataset_from_df', description='dataset_from_df')
-dataset_from_df.from_dataframe(df)
-
-print(all(dataset_from_df.dataframe() == td.dataframe()))
+# print(all(dataset_from_df.dataframe() == td.dataframe()))
