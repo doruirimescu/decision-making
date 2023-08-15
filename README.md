@@ -1,5 +1,5 @@
 # decision-making
-When you need to compare and decide which apartment to buy, which guitar suits you best, which candidates you should consider for the job.
+When you need to compare and decide which apartment to buy, which guitar suits you best, which candidates you should consider for the job, what is the perfect job for you, etc.
 
 # A software framework to enable human decision making
 
